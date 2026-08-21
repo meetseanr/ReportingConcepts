@@ -1,1233 +1,1040 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build AU — Concept Dashboard</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build AU — Performance Reporting Widgets (Concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d1d1f; --ink-med:#4a4a4c; --ink-light:#86868b; --ink-faint:#aeaeb2;
+  --bg:#f5f5f7; --card:#ffffff; --card-hover:#fcfcfd;
+  --border:#e5e5ea; --border-light:#f0f0f2;
+  --positive:#34c759; --positive-bg:#eafaf0; --positive-text:#1a7a32;
+  --negative:#ff3b30; --negative-bg:#fef0ef; --negative-text:#b81d14;
+  --warning:#ff9500; --warning-bg:#fff4e5; --warning-text:#8a5d00;
+  --neutral-bg:#f2f2f7;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
+  --radius:12px; --radius-sm:8px;
+  --sidebar-w:176px;
+  --ob-green:#76bc43; --ob-blue:#1a6fc4; --ob-blue-bg:#e8f1fb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg); color:var(--ink);
+  -webkit-font-smoothing:antialiased; font-size:13px; line-height:1.5;
+}
+svg{display:block;}
+button{font-family:inherit;}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ══ GREEN RULE + TOPBAR ══ */
+.green-rule{position:fixed;top:0;left:0;right:0;height:4px;background:var(--ob-green);z-index:60;}
+.topbar{
+  position:fixed;top:4px;left:0;right:0;height:48px;background:var(--card);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  padding:0 20px;gap:16px;z-index:55;
+}
+.logo{display:flex;align-items:center;gap:6px;}
+.logo-mark{width:15px;height:15px;flex-shrink:0;}
+.logo-obj{font-size:15px;font-weight:700;color:#2b2b2e;letter-spacing:-.3px;}
+.logo-build{font-size:15px;font-weight:300;color:var(--ob-green);letter-spacing:.5px;}
+.topbar-spacer{flex:1;}
+.tb-icon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .15s;}
+.tb-icon:hover{background:var(--neutral-bg);}
+.tb-icon svg{width:17px;height:17px;fill:none;stroke:var(--ink-med);stroke-width:1.6;}
+.tb-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--negative);border:1.5px solid var(--card);}
+.tb-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 6px 4px 4px;border-radius:20px;transition:background .15s;}
+.tb-user:hover{background:var(--neutral-bg);}
+.avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.av-sr{background:#8e4fc9;} .av-np{background:#2e9e4f;} .av-hs{background:#1f8a7a;}
+.av-ri{background:#c94f8e;} .av-bk{background:#c96a2e;} .av-tj{background:#4f6ac9;}
+.tb-username{font-size:13px;color:var(--ink);font-weight:500;}
+.tb-chev{width:12px;height:12px;fill:var(--ink-light);}
 
-    :root {
-      --ink: #1d1d1f;
-      --ink-med: #4a4a4c;
-      --ink-light: #86868b;
-      --ink-faint: #aeaeb2;
-      --bg: #f5f5f7;
-      --card: #ffffff;
-      --card-hover: #fcfcfd;
-      --border: #e5e5ea;
-      --border-light: #f0f0f2;
-      --positive: #34c759;
-      --positive-bg: #eafaf0;
-      --positive-text: #1a7a32;
-      --negative: #ff3b30;
-      --negative-bg: #fef0ef;
-      --negative-text: #b81d14;
-      --warning: #ff9500;
-      --warning-bg: #fff4e5;
-      --warning-text: #8a5d00;
-      --neutral-bg: #f2f2f7;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
-      --radius: 12px;
-      --sidebar-w: 56px;
-    }
+/* ══ SIDEBAR ══ */
+.sidebar{
+  position:fixed;top:52px;bottom:0;left:0;width:var(--sidebar-w);
+  background:var(--card);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:8px 0;z-index:50;
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:9px 14px;margin:1px 0;
+  font-size:13px;color:var(--ink-med);cursor:pointer;position:relative;
+  transition:background .15s;border:none;background:none;width:100%;text-align:left;
+}
+.nav-item:hover{background:#f7f8fa;}
+.nav-item svg{width:17px;height:17px;fill:none;stroke:var(--ink-light);stroke-width:1.6;flex-shrink:0;}
+.nav-item.active{background:var(--ob-blue-bg);color:var(--ob-blue);font-weight:600;}
+.nav-item.active svg{stroke:var(--ob-blue);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ob-blue);}
+.nav-collapse{padding:8px 14px;cursor:pointer;}
+.nav-collapse svg{width:14px;height:14px;fill:var(--ink-faint);}
+.sidebar-foot{margin-top:auto;padding-bottom:8px;}
 
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg); color: var(--ink);
-      line-height: 1.5; -webkit-font-smoothing: antialiased;
-      display: flex; min-height: 100vh;
-    }
+/* ══ PAGE ══ */
+.main{margin-left:var(--sidebar-w);padding-top:52px;}
+.page{max-width:1560px;padding:22px 26px 90px;}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:16px;}
+.page-title{font-size:19px;font-weight:600;color:var(--ink);letter-spacing:-.3px;}
+.page-sub{font-size:12px;color:var(--ink-light);margin-top:2px;}
+.page-search{
+  display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:7px 12px;width:330px;flex-shrink:0;
+}
+.page-search svg{width:15px;height:15px;fill:none;stroke:var(--ink-faint);stroke-width:1.8;}
+.page-search input{border:none;outline:none;font-size:12px;color:var(--ink);width:100%;background:none;}
+.page-search input::placeholder{color:var(--ink-faint);}
 
-    /* ─── SIDEBAR ─────────────────────────────────── */
-    .sidebar {
-      width: var(--sidebar-w); background: var(--card);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 12px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 60;
-    }
-    .sidebar-logo {
-      width: 32px; height: 32px; margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; background: var(--ink);
-    }
-    .sidebar-logo svg { width: 18px; height: 18px; fill: white; }
-    .sidebar-nav { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-    .sidebar-item {
-      width: 40px; height: 40px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; border: none; background: none; position: relative; transition: all 0.15s;
-    }
-    .sidebar-item svg { width: 20px; height: 20px; fill: var(--ink-faint); transition: fill 0.15s; }
-    .sidebar-item:hover { background: var(--neutral-bg); }
-    .sidebar-item:hover svg { fill: var(--ink-med); }
-    .sidebar-item.active { background: #eef0f8; }
-    .sidebar-item.active svg { fill: var(--ink); }
-    .sidebar-item.active::before {
-      content: ''; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
-      width: 3px; height: 20px; border-radius: 0 3px 3px 0; background: var(--ink);
-    }
-    .sidebar-divider { width: 28px; height: 1px; background: var(--border); margin: 8px 0; }
-    .sidebar-bottom { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 4px; }
+/* ══ SCREEN SWITCHER (prototype control) ══ */
+.proto-switch{
+  position:fixed;bottom:52px;left:50%;transform:translateX(-50%);
+  background:var(--ink);border-radius:999px;padding:4px;display:flex;gap:2px;
+  box-shadow:var(--shadow-lg);z-index:150;
+}
+.proto-switch button{
+  border:none;background:none;color:rgba(255,255,255,.6);
+  font-size:11px;font-weight:600;padding:7px 16px;border-radius:999px;
+  cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.proto-switch button.active{background:#fff;color:var(--ink);}
+.proto-switch button:hover:not(.active){color:#fff;}
+.screen{display:none;}
+.screen.active{display:block;}
 
-    /* ─── MAIN AREA ───────────────────────────────── */
-    .main-area { flex: 1; margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+/* ══ CONTEXT PANEL ══ */
+.bg-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
+.bg-panel-header{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;transition:background .15s;}
+.bg-panel-header:hover{background:var(--card-hover);}
+.bg-tag{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ob-blue);background:var(--ob-blue-bg);padding:3px 8px;border-radius:4px;}
+.bg-title{font-size:12px;font-weight:600;color:var(--ink);flex:1;}
+.bg-chev{font-size:11px;color:var(--ink-faint);transition:transform .2s;}
+.bg-chev.open{transform:rotate(180deg);}
+.bg-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.bg-body.open{max-height:1400px;}
+.bg-row{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:10px 16px;border-top:1px solid var(--border-light);}
+.bg-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-light);padding-top:1px;}
+.bg-txt{font-size:12px;color:var(--ink-med);line-height:1.55;}
+.bg-txt .q{color:var(--warning-text);font-weight:600;}
 
-    /* ─── TOPBAR ──────────────────────────────────── */
-    .topbar {
-      background: var(--card); border-bottom: 1px solid var(--border);
-      padding: 0 32px; height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 50;
-    }
-    .logo { font-weight: 700; font-size: 16px; color: var(--ink); letter-spacing: -0.3px; }
-    .logo span { font-weight: 300; color: var(--ink-light); margin-left: 6px; font-size: 13px; }
-    .topbar-right { display: flex; align-items: center; gap: 14px; }
-    .topbar-search-wrap { position: relative; }
-    .topbar-search {
-      width: 220px; padding: 7px 12px 7px 32px;
-      border: 1px solid var(--border); border-radius: 8px;
-      font-size: 12px; font-family: 'Inter', sans-serif;
-      color: var(--ink); background: var(--bg); outline: none;
-    }
-    .topbar-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--ink-faint); }
-    .avatar-sm {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: linear-gradient(135deg, #b8c1ec, #a5b4fc);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600; color: white;
-    }
+/* ══ REPORTING BAND ══ */
+.rband{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
+.rband-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 16px 10px;border-bottom:1px solid var(--border-light);background:#fafafb;}
+.rband-title-wrap{display:flex;align-items:center;gap:9px;}
+.rband-dot{width:8px;height:8px;border-radius:50%;background:var(--ob-blue);flex-shrink:0;}
+.rband-name{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.2px;}
+.rband-sub{font-size:11px;color:var(--ink-light);margin-top:1px;}
+.rband-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.scope-chip{font-size:10px;font-weight:600;color:var(--ink-med);background:var(--neutral-bg);border:1px solid var(--border);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.rband-counter{font-size:11px;color:var(--ink-faint);font-weight:500;white-space:nowrap;}
+.rband-collapse{border:1px solid var(--border);background:var(--card);border-radius:6px;font-size:10px;font-weight:600;color:var(--ink-med);padding:4px 9px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.rband-collapse:hover{background:var(--neutral-bg);}
+.rband-body{padding:14px 16px;}
+.rband.collapsed .rband-body{display:none;}
 
-    /* ─── PAGE ────────────────────────────────────── */
-    .page { max-width: 1260px; margin: 0 auto; padding: 24px 32px 80px; width: 100%; }
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
-    .greeting-hello { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.5px; }
-    .greeting-sub { font-size: 13px; color: var(--ink-light); margin-top: 3px; }
-    .greeting-sub strong { color: var(--ink-med); font-weight: 500; }
+/* ══ COMPACT KPI CARDS ══ */
+.carousel-viewport{overflow:hidden;position:relative;}
+.carousel-track{display:flex;gap:12px;transition:transform .35s cubic-bezier(.4,0,.2,1);}
+.kpi-card{
+  flex:0 0 calc(25% - 9px);min-width:0;background:var(--card);
+  border-radius:10px;padding:13px 14px 14px;border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:flex-start;min-height:96px;
+}
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:9px;}
+.kpi-label{font-size:11px;color:var(--ink-med);font-weight:500;line-height:1.35;flex:1;}
+.kpi-num{font-size:9px;font-weight:700;color:var(--ink-faint);background:var(--border-light);padding:1px 5px;border-radius:4px;margin-right:5px;}
+.kpi-pacing{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.kpi-pacing.on-track{background:var(--positive-bg);color:var(--positive-text);}
+.kpi-pacing.off-track{background:var(--negative-bg);color:var(--negative-text);}
+.kpi-pacing.caution{background:var(--warning-bg);color:var(--warning-text);}
+.kpi-pacing.neutral{background:var(--neutral-bg);color:var(--ink-light);}
+.kpi-value{font-size:27px;font-weight:700;color:var(--ink);letter-spacing:-1px;line-height:1;margin-bottom:2px;}
+.kpi-value .unit{font-size:14px;font-weight:400;color:var(--ink-light);letter-spacing:0;}
+.kpi-value.val-alert{color:var(--negative-text);}
+.kpi-value.val-warning{color:var(--warning-text);}
+.kpi-value.val-good{color:var(--positive-text);}
+.kpi-target{font-size:9px;color:var(--ink-faint);line-height:1.45;margin-top:auto;padding-top:8px;border-top:1px solid var(--border-light);}
+.kpi-cmp{font-size:11px;display:flex;align-items:center;gap:6px;margin:4px 0 0;flex-wrap:wrap;}
+.cmp-delta{font-weight:700;}
+.cmp-delta.up{color:var(--positive-text);}
+.cmp-delta.down{color:var(--negative-text);}
+.cmp-delta.neutral{color:var(--ink-med);}
+.cmp-note{color:var(--ink-light);}
+.cmp-badge{font-size:9px;font-weight:600;color:var(--ink-med);background:var(--neutral-bg);border:1px solid var(--border);padding:2px 6px;border-radius:4px;white-space:nowrap;}
+.cmp-good{color:var(--positive-text);font-weight:600;}
+.cmp-bad{color:var(--negative-text);font-weight:600;}
+.kpi-card.future{border:1px dashed var(--border);background:#fcfcfd;}
+.kpi-card.future .kpi-value,.kpi-card.future .kpi-type-count{color:var(--ink-light);}
+.kpi-phase{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:#eef0f5;color:#5a6478;border:1px dashed #c6cbd6;}
+.kpi-target code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;background:var(--neutral-bg);padding:0 3px;border-radius:3px;color:var(--ink-med);}
 
-    /* ─── DASHBOARD SECTION ───────────────────────── */
-    .dash-section { margin-bottom: 24px; border-radius: 14px; border: 2px solid var(--border); background: var(--card); overflow: hidden; }
-    .dash-section.section-leadership { border-color: #e00000; }
-    .dash-section.section-planner    { border-color: #3b5bdb; }
-    .dash-section.section-export     { border-color: var(--ink); }
 
-    .dash-section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 20px 10px; border-bottom: 1px solid var(--border-light);
-    }
-    .dash-section-header.leadership-header { background: #fff5f5; border-bottom-color: rgba(224,0,0,0.12); }
-    .dash-section-header.planner-header    { background: #f0f3ff; border-bottom-color: rgba(59,91,219,0.12); }
-    .dash-section-header.export-header     { background: #f5f5f7; border-bottom-color: rgba(0,0,0,0.08); }
+.kpi-type-list{display:flex;flex-direction:column;gap:6px;margin:2px 0 0;}
+.kpi-type-row{display:flex;align-items:center;gap:8px;}
+.kpi-type-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.kpi-type-name{font-size:11px;color:var(--ink-med);flex:1;}
+.kpi-type-count{font-size:13px;font-weight:700;color:var(--ink);}
+.kpi-type-pct{font-size:10px;color:var(--ink-faint);width:30px;text-align:right;}
+.carousel-controls{display:flex;align-items:center;gap:7px;}
+.carousel-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.carousel-btn:hover:not(:disabled){background:var(--neutral-bg);border-color:var(--ink-faint);}
+.carousel-btn:disabled{opacity:.3;cursor:default;}
+.carousel-btn svg{width:12px;height:12px;fill:var(--ink-med);}
+.carousel-dots{display:flex;gap:5px;align-items:center;}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .2s;cursor:pointer;}
+.carousel-dot.active{background:var(--ob-blue);width:16px;border-radius:3px;}
 
-    .section-title-wrap { display: flex; align-items: center; gap: 10px; }
-    .section-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .dot-red  { background: #e00000; }
-    .dot-blue { background: #3b5bdb; }
-    .section-name { font-size: 13px; font-weight: 700; letter-spacing: -0.2px; }
-    .section-name.red  { color: #b80000; }
-    .section-name.blue { color: #2d4ec7; }
-    .section-persona { font-size: 11px; color: var(--ink-light); margin-top: 1px; }
-    .section-counter {
-      font-size: 11px; color: var(--ink-faint);
-      background: var(--neutral-bg); padding: 3px 10px;
-      border-radius: 20px; border: 1px solid var(--border-light); font-weight: 500;
-    }
+/* ══ WORK CARD / TABS / TABLES ══ */
+.work-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;}
+.tabs{display:flex;gap:0;padding:0 16px;border-bottom:1px solid var(--border);}
+.tab{
+  border:none;background:none;font-size:13px;font-weight:500;color:var(--ink-light);
+  padding:13px 14px 11px;cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .15s;white-space:nowrap;
+}
+.tab:hover{color:var(--ink-med);}
+.tab.active{color:var(--ob-blue);font-weight:600;border-bottom-color:var(--ob-blue);}
+.tab-panel{display:none;} .tab-panel.active{display:block;}
+.group-bar{
+  display:flex;align-items:center;gap:8px;background:#fafafb;
+  border-bottom:1px solid var(--border-light);padding:9px 16px;
+}
+.group-chev{font-size:10px;color:var(--ink-light);}
+.group-name{font-size:12px;font-weight:600;color:var(--ink);}
+.group-count{font-size:12px;color:var(--ink-light);}
+.table-tools{display:flex;gap:4px;padding:9px 16px 6px;}
+.tool-btn{width:26px;height:26px;border-radius:6px;border:none;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
+.tool-btn:hover{background:var(--neutral-bg);}
+.tool-btn svg{width:15px;height:15px;fill:none;stroke:var(--ink-med);stroke-width:1.7;}
+.tbl-wrap{overflow-x:auto;}
+table.dt{width:100%;border-collapse:collapse;}
+table.dt th{
+  font-size:11px;font-weight:600;color:var(--ink-med);text-align:left;
+  padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--card);
+}
+table.dt th .sort{color:var(--ink-faint);font-size:9px;margin-left:3px;}
+table.dt td{
+  font-size:12px;color:var(--ink-med);padding:11px 12px;
+  border-bottom:1px solid var(--border-light);white-space:nowrap;vertical-align:middle;
+}
+table.dt tr:last-child td{border-bottom:none;}
+table.dt tbody tr{cursor:pointer;transition:background .12s;}
+table.dt tbody tr:hover{background:#fafbfc;}
+.da-link{color:var(--ob-blue);font-weight:600;}
+.da-ico{display:inline-block;width:11px;height:11px;margin-left:5px;opacity:.5;vertical-align:-1px;}
+.cell-officer{display:flex;align-items:center;gap:7px;}
+.avatar-xs{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#fff;flex-shrink:0;}
+.dash{color:var(--ink-faint);}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+.chip-team{background:var(--ob-blue-bg);color:#1a5fa8;}
+.chip-grey{background:var(--neutral-bg);color:var(--ink-light);}
+.chip-amber{background:var(--warning-bg);color:var(--warning-text);}
+.chip-pink{background:#fdeef2;color:#a8215c;}
+.chip-yellow{background:#fff8d9;color:#8a6d00;}
+.chip-green{background:var(--positive-bg);color:var(--positive-text);}
+.chip-red{background:var(--negative-bg);color:var(--negative-text);}
 
-    /* ─── CAROUSEL ────────────────────────────────── */
-    .carousel-wrap { padding: 16px 20px; }
-    .carousel-viewport { overflow: hidden; }
-    .carousel-track { display: flex; gap: 12px; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+/* ══ EXPORT ══ */
+.export-band{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
+.export-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px 10px;border-bottom:1px solid var(--border-light);background:#fafafb;}
+.export-body{padding:16px;}
+.export-trigger-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.export-btn{
+  display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;
+  padding:8px 14px;cursor:pointer;transition:opacity .15s;
+}
+.export-btn:hover{opacity:.86;}
+.export-btn svg{width:13px;height:13px;fill:#fff;}
+.export-timeframe{
+  font-family:inherit;font-size:12px;color:var(--ink);background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer;outline:none;
+}
+.export-hint{font-size:11px;color:var(--ink-faint);}
+.export-panel{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+.export-panel.visible{max-height:1400px;}
+.export-panel-label{font-size:11px;font-weight:600;color:var(--ink-light);text-transform:uppercase;letter-spacing:.4px;margin:18px 0 10px;}
+.export-tables-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.export-table-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.export-table-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 13px;background:#fafafb;border-bottom:1px solid var(--border-light);}
+.export-table-title{font-size:12px;font-weight:700;color:var(--ink);}
+.export-table-desc{font-size:10px;color:var(--ink-light);margin-top:1px;}
+.export-row-count{font-size:10px;font-weight:600;color:var(--ink-med);background:var(--neutral-bg);padding:3px 8px;border-radius:20px;white-space:nowrap;}
+table.export-col-table{width:100%;border-collapse:collapse;}
+table.export-col-table td{font-size:11px;color:var(--ink-med);padding:6px 13px;border-bottom:1px solid var(--border-light);}
+table.export-col-table tr:last-child td{border-bottom:none;}
+table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);font-size:10px;}
+.export-col-type{font-size:9px;font-weight:600;color:var(--ink-light);background:var(--neutral-bg);padding:2px 6px;border-radius:4px;margin-right:6px;}
+.export-dl-row{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.export-dl-btn{display:inline-flex;align-items:center;gap:7px;background:var(--ob-green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer;transition:opacity .15s;}
+.export-dl-btn:hover{opacity:.88;}
+.export-dl-btn svg{width:13px;height:13px;fill:#fff;}
+.export-dl-note{font-size:11px;color:var(--ink-faint);}
 
-    .kpi-card {
-      flex: 0 0 calc(25% - 9px); min-width: 0;
-      background: var(--card); border-radius: var(--radius);
-      padding: 16px 16px 12px; border: 1px solid var(--border-light);
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s, transform 0.2s; cursor: pointer;
-    }
-    .kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+/* ══ TOAST / TAG / GATE ══ */
+.toast{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;
+  font-size:12px;font-weight:500;box-shadow:var(--shadow-lg);
+  opacity:0;transition:all .3s ease;z-index:200;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.proto-tag{
+  position:fixed;bottom:12px;right:14px;font-size:10px;color:var(--ink-faint);
+  background:var(--card);padding:4px 11px;border-radius:6px;border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);z-index:100;max-width:640px;
+}
+.gate{position:fixed;inset:0;background:#f5f5f7;z-index:9999;display:flex;align-items:center;justify-content:center;}
+.gate-box{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);padding:34px 32px;width:352px;text-align:center;}
+.gate-title{font-size:17px;font-weight:600;margin-bottom:5px;}
+.gate-sub{font-size:12px;color:var(--ink-light);margin-bottom:20px;line-height:1.5;}
+.gate-input{width:100%;font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);outline:none;text-align:center;letter-spacing:2px;}
+.gate-input:focus{border-color:var(--ob-blue);}
+.gate-btn{width:100%;margin-top:11px;background:var(--ink);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;padding:11px;cursor:pointer;}
+.gate-error{font-size:11px;color:var(--negative-text);margin-top:9px;min-height:14px;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.gate-shake{animation:shake .3s;}
 
-    .kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .kpi-label { font-size: 11px; color: var(--ink-light); font-weight: 500; line-height: 1.35; padding-right: 6px; }
-    .kpi-num { font-size: 9px; font-weight: 700; color: var(--ink-faint); background: var(--border-light); padding: 1px 5px; border-radius: 4px; flex-shrink: 0; margin-right: 5px; }
-    .kpi-pacing { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
-    .kpi-pacing.on-track  { background: var(--positive-bg); color: var(--positive-text); }
-    .kpi-pacing.off-track { background: var(--negative-bg); color: var(--negative-text); }
-    .kpi-pacing.caution   { background: var(--warning-bg);  color: var(--warning-text); }
-    .kpi-pacing.neutral   { background: var(--neutral-bg);  color: var(--ink-light); }
-
-    .kpi-value { font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
-    .kpi-value.val-alert   { color: var(--negative-text); }
-    .kpi-value.val-warning { color: var(--warning-text); }
-    .kpi-value.val-good    { color: var(--positive-text); }
-
-    .kpi-change { font-size: 11px; display: flex; align-items: center; gap: 3px; margin-bottom: 10px; flex-wrap: wrap; }
-    .kpi-change-up   { color: var(--positive-text); font-weight: 600; }
-    .kpi-change-down { color: var(--negative-text); font-weight: 600; }
-    .kpi-change-neutral { color: var(--ink-light); }
-
-    .kpi-target { font-size: 9px; color: var(--ink-faint); line-height: 1.4; margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--border-light); }
-
-    /* Type breakdown */
-    .kpi-type-list { display: flex; flex-direction: column; gap: 7px; margin: 8px 0; }
-    .kpi-type-row { display: flex; align-items: center; gap: 8px; }
-    .kpi-type-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-    .kpi-type-name  { font-size: 12px; color: var(--ink-med); flex: 1; }
-    .kpi-type-count { font-size: 13px; font-weight: 700; color: var(--ink); }
-    .kpi-type-pct   { font-size: 10px; color: var(--ink-faint); width: 32px; text-align: right; }
-
-    /* ─── CAROUSEL CONTROLS ───────────────────────── */
-    .carousel-controls { display: flex; align-items: center; gap: 8px; }
-    .carousel-btn {
-      width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--card); display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-    }
-    .carousel-btn:hover:not(:disabled) { background: var(--neutral-bg); border-color: var(--ink-faint); }
-    .carousel-btn:disabled { opacity: 0.3; cursor: default; }
-    .carousel-btn svg { width: 14px; height: 14px; fill: var(--ink-med); }
-    .carousel-dots { display: flex; gap: 5px; align-items: center; }
-    .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.2s; cursor: pointer; }
-    .carousel-dot.active { background: var(--ink-med); width: 16px; border-radius: 3px; }
-
-    /* ─── EXPORT SECTION ──────────────────────────── */
-    .export-body { padding: 20px; }
-    .export-trigger-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .export-section-btn {
-      display: flex; align-items: center; gap: 8px; padding: 9px 20px;
-      border-radius: 8px; background: var(--ink); color: white;
-      border: none; font-size: 13px; font-weight: 600;
-      font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity 0.15s;
-    }
-    .export-section-btn:hover { opacity: 0.88; }
-    .export-section-btn svg { width: 15px; height: 15px; fill: white; }
-    .export-timeframe {
-      font-size: 12px; font-family: 'Inter', sans-serif; color: var(--ink-med);
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 12px; background: var(--card); cursor: pointer; outline: none;
-    }
-    .export-hint { font-size: 11px; color: var(--ink-faint); }
-
-    .export-panel {
-      display: none; margin-top: 20px;
-      border-top: 1px solid var(--border-light); padding-top: 20px;
-    }
-    .export-panel.visible { display: block; }
-    .export-panel-label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.5px; color: var(--ink-faint); margin-bottom: 14px;
-    }
-    .export-tables-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px; margin-bottom: 20px;
-      align-items: start;
-    }
-    .export-table-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .export-table-head {
-      background: var(--neutral-bg); padding: 10px 14px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid var(--border-light);
-    }
-    .export-table-title { font-size: 12px; font-weight: 700; color: var(--ink); }
-    .export-table-desc { font-size: 10px; color: var(--ink-faint); margin-top: 1px; }
-    .export-row-count { font-size: 10px; color: var(--ink-faint); background: var(--card); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-light); white-space: nowrap; flex-shrink: 0; }
-    .export-col-table { width: 100%; border-collapse: collapse; }
-    .export-col-table tr { border-bottom: 1px solid var(--border-light); }
-    .export-col-table tr:last-child { border-bottom: none; }
-    .export-col-table td { padding: 6px 14px; font-size: 11px; color: var(--ink-med); vertical-align: middle; }
-    .export-col-table td:first-child { font-weight: 500; color: var(--ink); width: 48%; }
-    .export-col-type { font-size: 9px; color: var(--ink-faint); background: var(--neutral-bg); padding: 1px 6px; border-radius: 3px; font-weight: 500; display: inline-block; margin-right: 4px; }
-    .export-dl-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .export-dl-btn {
-      display: flex; align-items: center; gap: 7px; padding: 9px 20px;
-      border-radius: 8px; background: var(--ink); color: white;
-      border: none; font-size: 12px; font-weight: 600;
-      font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity 0.15s;
-    }
-    .export-dl-btn:hover { opacity: 0.85; }
-    .export-dl-btn svg { width: 14px; height: 14px; fill: white; }
-    .export-dl-note { font-size: 11px; color: var(--ink-faint); }
-
-    @media (max-width: 768px) {
-      .export-tables-row { grid-template-columns: 1fr; }
-    }
-
-    /* ─── PASSWORD GATE ───────────────────────────── */
-    .gate {
-      position: fixed; inset: 0; z-index: 9999;
-      background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .gate-panel {
-      background: var(--card);
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
-      width: 660px;
-      overflow: hidden;
-      display: flex;
-    }
-    .gate-left {
-      width: 280px; flex-shrink: 0;
-      background: var(--ink);
-      padding: 40px 32px;
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-    }
-    .gate-left::before {
-      content: '';
-      position: absolute; top: -60px; right: -60px;
-      width: 180px; height: 180px; border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-    }
-    .gate-left::after {
-      content: '';
-      position: absolute; bottom: -40px; left: -40px;
-      width: 140px; height: 140px; border-radius: 50%;
-      background: rgba(255,255,255,0.03);
-    }
-    .gate-logo {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 40px; height: 40px; border-radius: 10px;
-      background: rgba(255,255,255,0.12); margin-bottom: 24px; flex-shrink: 0;
-    }
-    .gate-logo svg { width: 20px; height: 20px; fill: white; }
-    .gate-brand {
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,0.4);
-      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
-    }
-    .gate-proto-name {
-      font-size: 18px; font-weight: 700; color: white;
-      letter-spacing: -0.3px; line-height: 1.35;
-      margin-bottom: 24px; flex: 1;
-    }
-    .gate-meta { display: flex; flex-direction: column; gap: 10px; }
-    .gate-meta-item { display: flex; flex-direction: column; gap: 2px; }
-    .gate-meta-label {
-      font-size: 9px; font-weight: 600;
-      color: rgba(255,255,255,0.35);
-      text-transform: uppercase; letter-spacing: 0.8px;
-    }
-    .gate-meta-value { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); }
-    .gate-right {
-      flex: 1;
-      padding: 40px 36px;
-      display: flex; flex-direction: column; justify-content: center;
-    }
-    .gate-heading {
-      font-size: 16px; font-weight: 700; color: var(--ink);
-      letter-spacing: -0.3px; margin-bottom: 6px;
-    }
-    .gate-sub { font-size: 13px; color: var(--ink-light); line-height: 1.5; margin-bottom: 6px; }
-    .gate-disclaimer {
-      background: var(--neutral-bg);
-      border-radius: var(--radius-sm);
-      border-left: 3px solid var(--ink-faint);
-      padding: 10px 12px;
-      margin: 16px 0 24px;
-    }
-    .gate-disclaimer p { font-size: 11px; color: var(--ink-light); line-height: 1.6; }
-    .gate-disclaimer strong { font-weight: 600; color: var(--ink-med); }
-    .gate-input-label {
-      font-size: 11px; font-weight: 600; color: var(--ink-light);
-      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
-    }
-    .gate-input {
-      width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border); font-size: 14px;
-      font-family: 'Inter', sans-serif; color: var(--ink);
-      background: var(--neutral-bg); outline: none;
-      letter-spacing: 3px; margin-bottom: 10px;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .gate-input:focus { border-color: var(--ink); background: white; }
-    .gate-input.gate-shake { animation: gate-shake 0.35s ease; border-color: var(--negative); }
-    .gate-btn {
-      width: 100%; padding: 12px; border-radius: var(--radius-sm);
-      background: var(--ink); color: white; border: none;
-      font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
-      cursor: pointer; transition: opacity 0.15s;
-    }
-    .gate-btn:hover { opacity: 0.85; }
-    .gate-error { font-size: 12px; color: var(--negative-text); margin-top: 10px; min-height: 18px; }
-    .gate-footer { font-size: 10px; color: var(--ink-faint); margin-top: 20px; }
-    @keyframes gate-shake {
-      0%, 100% { transform: translateX(0); }
-      20%       { transform: translateX(-6px); }
-      40%       { transform: translateX(6px); }
-      60%       { transform: translateX(-4px); }
-      80%       { transform: translateX(4px); }
-    }
-
-    /* ─── PROTOTYPE CONTEXT PANEL ────────────────── */
-    .bg-panel {
-      margin-bottom: 20px;
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid #e0e8ff;
-    }
-    .bg-panel-header {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 16px;
-      background: #f0f4ff;
-      cursor: pointer; user-select: none;
-      transition: background 0.15s;
-    }
-    .bg-panel-header:hover { background: #e8effe; }
-    .bg-tag {
-      font-size: 9px; font-weight: 700;
-      color: #5470cc;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      background: #dce8ff; border-radius: 4px;
-      padding: 2px 6px; flex-shrink: 0;
-    }
-    .bg-title {
-      font-size: 12px; font-weight: 600;
-      color: #3355aa; flex: 1;
-    }
-    .bg-chev {
-      font-size: 12px; color: #5470cc;
-      transition: transform 0.2s;
-    }
-    .bg-chev.open { transform: rotate(180deg); }
-    .bg-body {
-      display: none;
-      padding: 16px;
-      background: #f8f9ff;
-      border-top: 1px solid #e0e8ff;
-    }
-    .bg-body.open { display: block; }
-    .bg-row { margin-bottom: 12px; }
-    .bg-row:last-child { margin-bottom: 0; }
-    .bg-lbl {
-      font-size: 10px; font-weight: 700;
-      color: #5470cc;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-bottom: 3px;
-    }
-    .bg-txt {
-      font-size: 12px; color: #3a4a7a;
-      line-height: 1.6;
-    }
-
-    /* ─── PROTO TAG ───────────────────────────────── */
-    .proto-tag {
-      position: fixed; bottom: 16px; right: 16px; font-size: 11px; color: var(--ink-faint);
-      background: var(--card); padding: 4px 12px; border-radius: 6px;
-      border: 1px solid var(--border); box-shadow: var(--shadow-sm); z-index: 100;
-    }
-
-    /* ─── TOAST ───────────────────────────────────── */
-    .toast {
-      position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: var(--ink); color: white; padding: 10px 20px; border-radius: 8px;
-      font-size: 12px; font-weight: 500; box-shadow: var(--shadow-lg);
-      opacity: 0; transition: all 0.3s ease; z-index: 200; pointer-events: none;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 900px) {
-      .kpi-card { flex: 0 0 calc(50% - 6px); }
-      .export-tables-row { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
-      .sidebar { display: none; } .main-area { margin-left: 0; }
-      .page { padding: 16px 16px 80px; }
-      .kpi-card { flex: 0 0 100%; }
-    }
-  </style>
+@media(max-width:1200px){.kpi-card{flex:0 0 calc(33.333% - 8px);}.export-tables-row{grid-template-columns:1fr;}}
+@media(max-width:880px){.sidebar{display:none;}.main{margin-left:0;}.kpi-card{flex:0 0 calc(50% - 6px);}.page-search{display:none;}}
+</style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="sidebar-logo">
-    <svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>
+<div class="green-rule"></div>
+
+<!-- ══════════ TOPBAR ══════════ -->
+<div class="topbar">
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 16 16"><rect x="0" y="9" width="3.4" height="7" fill="#76bc43"/><rect x="4.9" y="5" width="3.4" height="11" fill="#76bc43"/><rect x="9.8" y="1" width="3.4" height="15" fill="#5a9c30"/></svg>
+    <span class="logo-obj">Objective</span><span class="logo-build">BUILD</span>
   </div>
-  <div class="sidebar-nav">
-    <button class="sidebar-item" title="My Work">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+  <div class="topbar-spacer"></div>
+  <div class="tb-icon" onclick="showToast('What’s new — not part of this concept')">
+    <svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1z"/><path d="M14 8a5 5 0 010 8"/></svg>
+    <span class="tb-dot"></span>
+  </div>
+  <div class="tb-icon" onclick="showToast('Notifications — not part of this concept')">
+    <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+  </div>
+  <div class="tb-user" onclick="showToast('Account menu — not part of this concept')">
+    <span class="avatar av-sr">SR</span>
+    <span class="tb-username">Sean Richards</span>
+    <svg class="tb-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+  </div>
+</div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<div class="sidebar">
+  <button class="nav-item" id="nav-dashboard" onclick="switchScreen('dashboard')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-item" id="nav-applications" onclick="switchScreen('applications')">
+    <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+    Applications
+  </button>
+  <button class="nav-item" onclick="showToast('Planning resources — not part of this concept')">
+    <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 13h6M9 17h4"/></svg>
+    Planning resources
+  </button>
+  <button class="nav-item" onclick="showToast('Teams — not part of this concept')">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 015-5h2a5 5 0 015 5v1"/><circle cx="17" cy="9" r="2.4"/><path d="M17 14a4 4 0 014 4v2"/></svg>
+    Teams
+  </button>
+  <button class="nav-item" onclick="showToast('Users and roles — not part of this concept')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20v-1a7 7 0 0114 0v1"/></svg>
+    Users and roles
+  </button>
+  <div class="nav-collapse" onclick="showToast('Collapse navigation — not part of this concept')">
+    <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6z"/></svg>
+  </div>
+  <div class="sidebar-foot">
+    <button class="nav-item" onclick="showToast('About — not part of this concept')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      About
     </button>
-    <button class="sidebar-item active" title="Performance">
-      <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
-    </button>
-    <button class="sidebar-item" title="Team">
-      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-    </button>
-    <button class="sidebar-item" title="Export">
-      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    <button class="nav-item" onclick="showToast('Help — not part of this concept')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.7-1.5 1.2-1.5 2.5M12 17h.01"/></svg>
+      Help
     </button>
   </div>
-  <div class="sidebar-bottom">
-    <div class="sidebar-divider"></div>
-    <button class="sidebar-item" title="Settings">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-    </button>
-  </div>
-</nav>
+</div>
 
-<!-- MAIN AREA -->
-<div class="main-area">
+<div class="main">
 
-  <div class="topbar">
-    <div style="display:flex;align-items:center;gap:20px;">
-      <div class="logo">Build AU<span>Performance Dashboard</span></div>
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 1 — USER DASHBOARD (personal reporting widgets)
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-dashboard">
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <div class="page-title">Good afternoon Sean</div>
     </div>
-    <div class="topbar-right">
-      <div class="topbar-search-wrap">
-        <span class="topbar-search-icon">&#x2315;</span>
-        <input class="topbar-search" placeholder="Search DAs, addresses…">
-      </div>
-      <div class="avatar-sm">BK</div>
+    <div class="page-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+      <input type="text" placeholder="Search using application ID or address">
     </div>
   </div>
 
-  <div class="page">
-
-    <div class="page-header">
-      <div>
-        <div class="greeting-hello">Performance Dashboard</div>
-        <div class="greeting-sub">Example scenarios · <strong>Concepts for discussion — please confirm these are the right statistics</strong></div>
+  <!-- CONTEXT PANEL -->
+  <div class="bg-panel">
+    <div class="bg-panel-header" onclick="toggleBP('dash')">
+      <span class="bg-tag">Prototype context</span>
+      <span class="bg-title">Background &amp; design rationale — personal reporting widgets</span>
+      <span class="bg-chev" id="chev-dash">▾</span>
+    </div>
+    <div class="bg-body" id="bp-dash">
+      <div class="bg-row">
+        <div class="bg-lbl">What this screen does</div>
+        <div class="bg-txt">Places a row of personal performance widgets at the top of the logged-in user's dashboard, directly above their existing work lists. The widget set is standardised with the Applications page: the same widgets appear on both screens, scoped to <strong>"My"</strong> here and <strong>"All"</strong> there. Widget 12 (RFI letters in progress) is exclusive to this screen. Everything below the widget row is the existing dashboard: the Admin, Active, Determine and Completed tabs and their grouped work queues.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Why designed this way</div>
+        <div class="bg-txt">When Build AU becomes the primary assessment system, councils lose the performance reporting currently embedded in their ERPs (Pathway, TechOne, Authority). Foundation partner research (Canada Bay, North Sydney, Ryde, Hornsby) confirmed performance reporting is a baseline expectation rather than a differentiator. Individual planners asked for their own numbers in the place they already start their day, so the personal widgets sit on the dashboard rather than in a separate reporting area. Whole-of-council figures have moved to the Applications page, where the whole-of-council data set already lives.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Audience</div>
+        <div class="bg-txt">Every user with an assessment caseload — Senior Statutory Planners, assessing officers, and team leaders looking at their own work rather than the team's. The widgets always describe the logged-in user, so no persona switch or role check is needed.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Design decisions</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the Applications page plus widget 12. Widget 5 is excluded per the spec as too close to widget 4. Widgets 7, 8, 10 and 11 are drawn with a dashed border and a "Later phase" tag — 7 until team performance periods are implemented, 8 until the planning-reform application types settle, and 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 12. Counts (1, 2, 3) compare against the previous calendar month; widgets 4, 6 and 10 state a council-set target only. Cards are compact and carousel-paged (four visible of ten) so the work queue below stays reachable. Reference numbers are shown for review only and would not ship in the product.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Open questions</div>
+        <div class="bg-txt"><span class="q">1.</span> Six Phase 1 widgets and four deferred — is that the right split, and should the deferred ones appear at all in the shipped product? <span class="q">2.</span> Should the row load expanded or collapsed? <span class="q">3.</span> Widget 12 carries no comparison in the spec — is a bare count enough, or should it compare to last month too? <span class="q">4.</span> Should a team leader see their own caseload here, their team's, or a toggle? <span class="q">5.</span> With the "My" prefix removed, scope rests entirely on the "My performance" heading — is that signal strong enough?</div>
       </div>
     </div>
+  </div>
 
-    <!-- PROTOTYPE CONTEXT PANEL -->
-    <div class="bg-panel">
-      <div class="bg-panel-header" onclick="toggleBP('dashboard')">
-        <span class="bg-tag">Prototype context</span>
-        <span class="bg-title">Background &amp; Design Rationale</span>
-        <span class="bg-chev" id="chev-dashboard">▾</span>
-      </div>
-      <div class="bg-body" id="bp-dashboard">
-        <div class="bg-row">
-          <div class="bg-lbl">What this screen does</div>
-          <div class="bg-txt">Provides a performance dashboard with two persona-driven views: a team-wide leadership view (Bronwyn) showing aggregate KPIs, and an individual planner view (Ralph) showing personal caseload metrics. A data export section allows extraction of DA assessment and referral data for use in external reporting tools like Power BI.</div>
-        </div>
-        <div class="bg-row">
-          <div class="bg-lbl">Why designed this way</div>
-          <div class="bg-txt">When Build AU becomes the primary DA assessment system, councils lose access to the performance reporting currently embedded in their ERPs (Pathway, TechOne, Authority). The NSW Faster Assessments program publicly ranks councils via the Council League Table — councils need to monitor assessment speed in real time against tightening targets (105 days FY25–26, reducing to 85 days by FY27–28). Foundation partner research (Canada Bay, North Sydney, Ryde, Hornsby) confirmed that performance reporting is a baseline expectation, not a differentiator. The two-persona split reflects how councils actually operate: team leaders monitor workload distribution and league table compliance, while individual planners track their own caseload against team averages.</div>
-        </div>
-        <div class="bg-row">
-          <div class="bg-lbl">Audience</div>
-          <div class="bg-txt">Planning Team Leaders (Bronwyn persona) for the leadership section. Senior Statutory Planners (Ralph persona) for the individual performance section. Both personas confirmed across all four foundation partner councils.</div>
-        </div>
-        <div class="bg-row">
-          <div class="bg-lbl">Design decisions</div>
-          <div class="bg-txt">KPI cards use a carousel rather than a 5-across grid to accommodate 11 cards per persona without overwhelming the screen. The "At Risk" threshold (currently &gt;80 days) is noted as configurable because councils benchmark differently — some use 70, others 90 or 100. Gross days, net days, and STC tracking are separated because the League Table uses gross days but councils internally prefer net days (excluding applicant response time). The data export section provides two flat CSV tables (DA Assessment + Internal Referrals) rather than a single joined table, matching the structure councils need for Power BI ingestion.</div>
+  <!-- PERSONAL REPORTING WIDGETS -->
+  <div class="rband" id="rband-mine">
+    <div class="rband-head">
+      <div class="rband-title-wrap">
+        <span class="rband-dot"></span>
+        <div>
+          <div class="rband-name">My performance</div>
+          <div class="rband-sub">Applications assigned to you</div>
         </div>
       </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════
-         SECTION 1 — PLANNING LEADERSHIP (Bronwyn)
-    ════════════════════════════════════════════ -->
-    <div class="dash-section section-leadership">
-      <div class="dash-section-header leadership-header">
-        <div class="section-title-wrap">
-          <span class="section-dot dot-red"></span>
-          <div>
-            <div class="section-name red">Planning Leadership</div>
-            <div class="section-persona">Bronwyn K. — Planning Team Leader · Team-wide view</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="section-counter" id="bronwyn-counter">Showing 1–4 of 11</span>
-          <div class="carousel-controls">
-            <button class="carousel-btn" id="bronwyn-prev" onclick="scrollCarousel('bronwyn',-1)" disabled>
-              <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-            <div class="carousel-dots" id="bronwyn-dots"></div>
-            <button class="carousel-btn" id="bronwyn-next" onclick="scrollCarousel('bronwyn',1)">
-              <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-wrap">
-        <div class="carousel-viewport" id="bronwyn-viewport">
-          <div class="carousel-track" id="bronwyn-track">
-
-            <!-- B1 -->
-            <div class="kpi-card" onclick="showToast('All Active DAs — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">1</span>All Active DAs</div>
-                <span class="kpi-pacing neutral">All Types</span>
-              </div>
-              <div class="kpi-value">142</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 8</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">All DAs currently under assessment across the team</div>
-            </div>
-
-            <!-- B2 -->
-            <div class="kpi-card" onclick="showToast('Lodged This Month — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">2</span>Lodged This Month</div>
-                <span class="kpi-pacing neutral">Incoming</span>
-              </div>
-              <div class="kpi-value">23</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 3</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">DAs lodged this month across the team</div>
-            </div>
-
-            <!-- B3 -->
-            <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">3</span>Determined This Month</div>
-                <span class="kpi-pacing on-track">Clearing ↓</span>
-              </div>
-              <div class="kpi-value val-good">31</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↑ 5</span>
-                <span class="kpi-change-neutral">vs last month · 8 more than lodged</span>
-              </div>
-              <div class="kpi-target">DAs determined this month across the team — backlog is clearing</div>
-            </div>
-
-            <!-- B4 -->
-            <div class="kpi-card" onclick="showToast('Avg Gross Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">4</span>Avg Gross Days — Active</div>
-                <span class="kpi-pacing on-track">On Track</span>
-              </div>
-              <div class="kpi-value val-good">68</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 4 days</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">Average age of all active DAs. Target ≤ 105 days FY 25–26.</div>
-            </div>
-
-            <!-- B5 -->
-            <div class="kpi-card" style="border-color:rgba(52,199,89,0.3);" onclick="showToast('Avg Determination Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">5</span>Avg Determination Days <em style="font-style:italic;font-size:9px;">(League Table)</em></div>
-                <span class="kpi-pacing on-track">On Target</span>
-              </div>
-              <div class="kpi-value val-good">89</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 1 day</span>
-                <span class="kpi-change-neutral">vs last month · 16 days inside target</span>
-              </div>
-              <div class="kpi-target">Primary NSW Council League Table metric. Target ≤ 105 days FY 25–26.</div>
-            </div>
-
-            <!-- B6 -->
-            <div class="kpi-card" onclick="showToast('At Risk DAs — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">6</span>At Risk (&gt;80 gross days)</div>
-                <span class="kpi-pacing caution">Monitor</span>
-              </div>
-              <div class="kpi-value val-warning">28</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 3</span>
-                <span class="kpi-change-neutral">vs last month · 19.7% of caseload</span>
-              </div>
-              <div class="kpi-target">DAs approaching or past the 105-day target. Threshold is configurable (e.g. 70, 80, 90, 100 days).</div>
-            </div>
-
-            <!-- B7 -->
-            <div class="kpi-card" onclick="showToast('Overdue Referrals — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">7</span>Overdue Referrals</div>
-                <span class="kpi-pacing off-track">Action Needed</span>
-              </div>
-              <div class="kpi-value val-alert">9</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 2</span>
-                <span class="kpi-change-neutral">vs last week · 28 total pending</span>
-              </div>
-              <div class="kpi-target">Referrals past their return date</div>
-            </div>
-
-            <!-- B8 -->
-            <div class="kpi-card" onclick="showToast('Active DAs by Type — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">8</span>Active DAs by Type</div>
-                <span class="kpi-pacing neutral">Breakdown</span>
-              </div>
-              <div class="kpi-type-list">
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#1d1d1f;"></span>
-                  <span class="kpi-type-name">DA</span>
-                  <span class="kpi-type-count">95</span>
-                  <span class="kpi-type-pct">67%</span>
-                </div>
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#ff9500;"></span>
-                  <span class="kpi-type-name">MA</span>
-                  <span class="kpi-type-count">32</span>
-                  <span class="kpi-type-pct">23%</span>
-                </div>
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#c7c7cc;"></span>
-                  <span class="kpi-type-name">Other</span>
-                  <span class="kpi-type-count">15</span>
-                  <span class="kpi-type-pct">11%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- B9 -->
-            <div class="kpi-card" onclick="showToast('Avg Lodgement Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">9</span>Avg Lodgement Days</div>
-                <span class="kpi-pacing on-track">On Target</span>
-              </div>
-              <div class="kpi-value val-good">5</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 1 day</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">Submitted to lodged, council-wide average. Target ≤ 7 days.</div>
-            </div>
-
-            <!-- B10 -->
-            <div class="kpi-card" onclick="showToast('Avg Net Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">10</span>Avg Net Days — Active</div>
-                <span class="kpi-pacing on-track">On Track</span>
-              </div>
-              <div class="kpi-value val-good">61</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 3 days</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">Avg gross days minus RFI response time for DAs with STC. Team-wide.</div>
-            </div>
-
-            <!-- B11 -->
-            <div class="kpi-card" onclick="showToast('DAs with Clock Stopped — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">11</span>DAs with Clock Stopped</div>
-                <span class="kpi-pacing neutral">STC Active</span>
-              </div>
-              <div class="kpi-value">12</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 2</span>
-                <span class="kpi-change-neutral">vs last month · 8.5% of caseload</span>
-              </div>
-              <div class="kpi-target">DAs where an RFI has been issued and the clock is currently paused</div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div><!-- end section-leadership -->
-
-
-    <!-- ═══════════════════════════════════════════
-         SECTION 2 — PLANNER PERFORMANCE (Ralph)
-    ════════════════════════════════════════════ -->
-    <div class="dash-section section-planner">
-      <div class="dash-section-header planner-header">
-        <div class="section-title-wrap">
-          <span class="section-dot dot-blue"></span>
-          <div>
-            <div class="section-name blue">Planner Performance</div>
-            <div class="section-persona">Ralph T. — Senior Statutory Planner · Individual view</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="section-counter" id="ralph-counter">Showing 1–4 of 11</span>
-          <div class="carousel-controls">
-            <button class="carousel-btn" id="ralph-prev" onclick="scrollCarousel('ralph',-1)" disabled>
-              <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-            <div class="carousel-dots" id="ralph-dots"></div>
-            <button class="carousel-btn" id="ralph-next" onclick="scrollCarousel('ralph',1)">
-              <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-wrap">
-        <div class="carousel-viewport" id="ralph-viewport">
-          <div class="carousel-track" id="ralph-track">
-
-            <!-- R1 -->
-            <div class="kpi-card" onclick="showToast('My Active DAs — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">1</span>My Active DAs</div>
-                <span class="kpi-pacing caution">+2 vs team avg</span>
-              </div>
-              <div class="kpi-value">18</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 2</span>
-                <span class="kpi-change-neutral">vs last month · team avg 16</span>
-              </div>
-              <div class="kpi-target">DAs currently assigned to Ralph</div>
-            </div>
-
-            <!-- R2 -->
-            <div class="kpi-card" onclick="showToast('My Avg Gross Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">2</span>My Avg Gross Days — Active</div>
-                <span class="kpi-pacing on-track">On Track</span>
-              </div>
-              <div class="kpi-value val-good">72</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 5 days</span>
-                <span class="kpi-change-neutral">vs last month · team avg 76d</span>
-              </div>
-              <div class="kpi-target">Average age of Ralph's active DAs. Target ≤ 105 days.</div>
-            </div>
-
-            <!-- R3 -->
-            <div class="kpi-card" onclick="showToast('My Avg Determination Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">3</span>My Avg Determination Days</div>
-                <span class="kpi-pacing on-track">On Target</span>
-              </div>
-              <div class="kpi-value val-good">84</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 2 days</span>
-                <span class="kpi-change-neutral">vs last month · team avg 89d</span>
-              </div>
-              <div class="kpi-target">Avg days to determine a DA this month. Target ≤ 105 days.</div>
-            </div>
-
-            <!-- R4 -->
-            <div class="kpi-card" onclick="showToast('My At Risk DAs — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">4</span>My At Risk DAs (&gt;80 days)</div>
-                <span class="kpi-pacing caution">Monitor</span>
-              </div>
-              <div class="kpi-value val-warning">4</div>
-              <div class="kpi-change">
-                <span class="kpi-change-neutral">Unchanged</span>
-                <span class="kpi-change-neutral">vs last month · 22% of caseload</span>
-              </div>
-              <div class="kpi-target">Ralph's DAs approaching the 105-day target. Threshold is configurable (e.g. 70, 80, 90, 100 days).</div>
-            </div>
-
-            <!-- R5 -->
-            <div class="kpi-card" onclick="showToast('My Overdue DAs — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">5</span>My Overdue DAs (&gt;105 days)</div>
-                <span class="kpi-pacing off-track">Overdue</span>
-              </div>
-              <div class="kpi-value val-alert">1</div>
-              <div class="kpi-change">
-                <span class="kpi-change-neutral">Unchanged</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">DAs past the 105-day determination target</div>
-            </div>
-
-            <!-- R6 -->
-            <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">6</span>Determined This Month</div>
-                <span class="kpi-pacing on-track">Above Target</span>
-              </div>
-              <div class="kpi-value val-good">7</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↑ 2</span>
-                <span class="kpi-change-neutral">vs last month · team avg 5.2</span>
-              </div>
-              <div class="kpi-target">DAs Ralph has determined this month</div>
-            </div>
-
-            <!-- R7 -->
-            <div class="kpi-card" onclick="showToast('My DAs by Type — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">7</span>My DAs by Type</div>
-                <span class="kpi-pacing neutral">Breakdown</span>
-              </div>
-              <div class="kpi-type-list">
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#1d1d1f;"></span>
-                  <span class="kpi-type-name">DA</span>
-                  <span class="kpi-type-count">12</span>
-                  <span class="kpi-type-pct">67%</span>
-                </div>
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#ff9500;"></span>
-                  <span class="kpi-type-name">MA</span>
-                  <span class="kpi-type-count">4</span>
-                  <span class="kpi-type-pct">22%</span>
-                </div>
-                <div class="kpi-type-row">
-                  <span class="kpi-type-dot" style="background:#c7c7cc;"></span>
-                  <span class="kpi-type-name">Other</span>
-                  <span class="kpi-type-count">2</span>
-                  <span class="kpi-type-pct">11%</span>
-                </div>
-              </div>
-              <div class="kpi-target">18 total active</div>
-            </div>
-
-            <!-- R8 -->
-            <div class="kpi-card" onclick="showToast('My Overdue Referrals — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">8</span>My Overdue Referrals</div>
-                <span class="kpi-pacing off-track">Action Needed</span>
-              </div>
-              <div class="kpi-value val-alert">2</div>
-              <div class="kpi-change">
-                <span class="kpi-change-down">↑ 1</span>
-                <span class="kpi-change-neutral">vs last week · 5 total pending</span>
-              </div>
-              <div class="kpi-target">Referrals on Ralph's DAs past their return date</div>
-            </div>
-
-            <!-- R9 -->
-            <div class="kpi-card" onclick="showToast('RFI Letters in Progress — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">9</span>RFI Letters in Progress</div>
-                <span class="kpi-pacing neutral">Active</span>
-              </div>
-              <div class="kpi-value">3</div>
-              <div class="kpi-target">RFI letters not yet closed</div>
-            </div>
-
-            <!-- R10 -->
-            <div class="kpi-card" onclick="showToast('My Avg Net Days — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">10</span>My Avg Net Days — Active</div>
-                <span class="kpi-pacing on-track">On Track</span>
-              </div>
-              <div class="kpi-value val-good">65</div>
-              <div class="kpi-change">
-                <span class="kpi-change-up">↓ 4 days</span>
-                <span class="kpi-change-neutral">vs last month</span>
-              </div>
-              <div class="kpi-target">Avg gross days minus RFI response time for Ralph's DAs with STC.</div>
-            </div>
-
-            <!-- R11 -->
-            <div class="kpi-card" onclick="showToast('My DAs with Clock Stopped — detail view coming in Phase 2')">
-              <div class="kpi-top">
-                <div class="kpi-label"><span class="kpi-num">11</span>My DAs with Clock Stopped</div>
-                <span class="kpi-pacing neutral">STC Active</span>
-              </div>
-              <div class="kpi-value">3</div>
-              <div class="kpi-change">
-                <span class="kpi-change-neutral">Unchanged</span>
-                <span class="kpi-change-neutral">vs last month · 17% of caseload</span>
-              </div>
-              <div class="kpi-target">Ralph's DAs where an RFI has been issued and the clock is currently paused</div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div><!-- end section-planner -->
-
-
-    <!-- ═══════════════════════════════════════════
-         SECTION 3 — EXPORT DATA
-    ════════════════════════════════════════════ -->
-    <div class="dash-section section-export">
-      <div class="dash-section-header export-header">
-        <div class="section-title-wrap">
-          <span class="section-dot" style="background:var(--ink);"></span>
-          <div>
-            <div class="section-name" style="color:var(--ink);">Export Data</div>
-            <div class="section-persona">Extract Build AU data for use in external reporting tools</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="export-body">
-        <div class="export-trigger-row">
-          <button class="export-section-btn" onclick="toggleExportPanel()">
-            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-            <span id="export-btn-label">Prepare Export</span>
+      <div class="rband-right">
+        <span class="rband-counter" id="mine-counter">Showing 1–4 of 10</span>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="mine-prev" onclick="scrollCarousel('mine',-1)" disabled>
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6z"/></svg>
           </button>
-          <select class="export-timeframe" id="export-timeframe" onchange="updateRowCounts()">
-            <option value="month">This month</option>
-            <option value="rolling30">Rolling 30 days</option>
-            <option value="3months">Last 3 months</option>
-            <option value="6months">Last 6 months</option>
-            <option value="12months">Last 12 months</option>
-          </select>
-          <span class="export-hint" id="export-hint">Select a timeframe then click Prepare Export to preview the data that will be downloaded</span>
+          <div class="carousel-dots" id="mine-dots"></div>
+          <button class="carousel-btn" id="mine-next" onclick="scrollCarousel('mine',1)">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6z"/></svg>
+          </button>
         </div>
+        <button class="rband-collapse" onclick="toggleBand('mine',this)">Hide</button>
+      </div>
+    </div>
+    <div class="rband-body">
+      <div class="carousel-viewport" id="mine-viewport">
+        <div class="carousel-track" id="mine-track">
 
-        <div class="export-panel" id="export-panel">
-
-          <div class="export-panel-label" id="export-panel-label">Data preview — This month</div>
-
-          <div class="export-tables-row">
-
-            <!-- Table 1: DA Assessment -->
-            <div class="export-table-card">
-              <div class="export-table-head">
-                <div>
-                  <div class="export-table-title">DA Assessment</div>
-                  <div class="export-table-desc">All DAs in the selected period</div>
-                </div>
-                <span class="export-row-count" id="da-row-count">~31 rows</span>
-              </div>
-              <table class="export-col-table">
-                <tr><td>DA Number</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Address</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Description</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>DA Type</td><td><span class="export-col-type">Text</span>DA / MA / Other</td></tr>
-                <tr><td>New Dwellings</td><td><span class="export-col-type">Number</span></td></tr>
-                <tr><td>Applicant Name</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Date Submitted</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Lodged</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Allocated</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Assessment Start</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Allocated Officer</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>STC</td><td><span class="export-col-type">Boolean</span>Yes / No</td></tr>
-                <tr><td>Date RFI Sent</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date RFI Responded</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Recommendation Date</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Determined</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Determination Days</td><td><span class="export-col-type">Number</span></td></tr>
-                <tr><td>Status</td><td><span class="export-col-type">Text</span>Allocated / In progress / Determined / Withdrawn</td></tr>
-                <tr><td>Determination</td><td><span class="export-col-type">Text</span>Approved / Refused / Deferred consent</td></tr>
-                <tr><td>Determination Authority</td><td><span class="export-col-type">Text</span></td></tr>
-              </table>
-            </div>
-
-            <!-- Table 2: Internal Referrals -->
-            <div class="export-table-card">
-              <div class="export-table-head">
-                <div>
-                  <div class="export-table-title">Internal Referrals</div>
-                  <div class="export-table-desc">All referrals in the selected period</div>
-                </div>
-                <span class="export-row-count" id="ref-row-count">~58 rows</span>
-              </div>
-              <table class="export-col-table">
-                <tr><td>DA Number</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Address</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Allocated Officer</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Referral Body / Team</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Assigned Officer</td><td><span class="export-col-type">Text</span></td></tr>
-                <tr><td>Date Issued</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Assigned</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Started</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Responded</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>Date Completed</td><td><span class="export-col-type">Date</span></td></tr>
-                <tr><td>KPI Time</td><td><span class="export-col-type">Number</span>Days e.g. 14, 21</td></tr>
-                <tr><td>Status</td><td><span class="export-col-type">Text</span>Not started / In progress / Responded / Completed</td></tr>
-                <tr><td>Position</td><td><span class="export-col-type">Text</span>Supported / Not supported / RFI/Design change</td></tr>
-                <tr><td>Conditions</td><td><span class="export-col-type">Boolean</span>Yes / No</td></tr>
-              </table>
-            </div>
-
-          </div><!-- end export-tables-row -->
-
-          <div class="export-dl-row">
-            <button class="export-dl-btn" onclick="showToast('Downloading CSV files…')">
-              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-              Download CSV
-            </button>
-            <span class="export-dl-note" id="export-dl-note">2 files · DA_Assessment.csv + Internal_Referrals.csv</span>
+          <div class="kpi-card" onclick="showToast('Active Applications — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">1</span>Active Applications</div></div>
+            <div class="kpi-value">18</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 2</span><span class="cmp-note">vs last month (16)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Lodged This Month — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">2</span>Lodged This Month</div></div>
+            <div class="kpi-value">4</div><div class="kpi-cmp"><span class="cmp-delta neutral">↓ 2</span><span class="cmp-note">vs last month (6)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">3</span>Determined This Month</div></div>
+            <div class="kpi-value">7</div><div class="kpi-cmp"><span class="cmp-delta up">↑ 2</span><span class="cmp-note">vs last month (5)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Avg Gross Days — Active — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">4</span>Avg Gross Days — Active</div></div>
+            <div class="kpi-value val-good">72<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 105 days</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Overdue Applications — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">6</span>Overdue Applications</div></div>
+            <div class="kpi-value val-alert">1</div><div class="kpi-cmp"><span class="cmp-badge">Council target 105 days</span></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Overdue Internal Referrals — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">7</span>Overdue Internal Referrals</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value">2</div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Active by Type — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">8</span>Active by Type</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-type-list"><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#1d1d1f;"></span><span class="kpi-type-name">DA</span><span class="kpi-type-count">12</span><span class="kpi-type-pct">67%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#ff9500;"></span><span class="kpi-type-name">MA</span><span class="kpi-type-count">4</span><span class="kpi-type-pct">22%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#c7c7cc;"></span><span class="kpi-type-name">Other</span><span class="kpi-type-count">2</span><span class="kpi-type-pct">11%</span></div></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Avg Net Days — Active — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">10</span>Avg Net Days — Active</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value val-good">65<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 90 days</span></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Clock Stopped — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">11</span>Clock Stopped</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value">3</div>
+          </div>
+          <div class="kpi-card" onclick="showToast('RFI Letters in Progress — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">12</span>RFI Letters in Progress</div></div>
+            <div class="kpi-value">3</div>
           </div>
 
-        </div><!-- end export-panel -->
-      </div><!-- end export-body -->
-    </div><!-- end section-export -->
+        </div>
+      </div>
+    </div>
+  </div>
 
-  </div><!-- end .page -->
-</div><!-- end .main-area -->
+  <!-- EXISTING DASHBOARD WORK LISTS -->
+  <div class="work-card">
+    <div class="tabs">
+      <button class="tab" onclick="switchTab('dash',0,this)">Admin (3)</button>
+      <button class="tab active" onclick="switchTab('dash',1,this)">Active (2)</button>
+      <button class="tab" onclick="switchTab('dash',2,this)">Determine</button>
+      <button class="tab" onclick="switchTab('dash',3,this)">Completed</button>
+    </div>
 
-<div class="proto-tag">Build AU — Concept Dashboard — Bronwyn K. (Planning Team Leader) / Ralph T. (Senior Statutory Planner) — This is a concept demonstration only and does not conform to the Objective Design Language. Commercial in confidence.</div>
+    <!-- Admin -->
+    <div class="tab-panel" data-grp="dash">
+      <div class="group-bar"><span class="group-chev">▾</span><span class="group-name">Awaiting allocation</span><span class="group-count">(3)</span></div>
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Age <span class="sort">↓</span></th><th>PAN ID</th><th>Application</th><th>Address</th><th>Application type</th><th>Development type</th><th>Referrals</th><th>Forwarded</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA445607 — detail view not part of this concept')"><td>49 days</td><td>PAN-12607035</td><td><span class="da-link">DA445607</span></td><td>138 Skye Point Road, Coal Point NSW 2283</td><td>Development application</td><td>Residential</td><td class="dash">--</td><td><span class="chip chip-green">Yes</span></td></tr>
+          <tr onclick="showToast('DA118902 — detail view not part of this concept')"><td>12 days</td><td>PAN-12611884</td><td><span class="da-link">DA118902</span></td><td>44 Drummoyne Avenue, Drummoyne NSW 2047</td><td>Development application</td><td>Multi-dwelling</td><td class="dash">--</td><td><span class="chip chip-grey">No</span></td></tr>
+          <tr onclick="showToast('MA330451 — detail view not part of this concept')"><td>4 days</td><td>PAN-12613220</td><td><span class="da-link">MA330451</span></td><td>7 Great North Road, Five Dock NSW 2046</td><td>Modification application</td><td>Commercial</td><td class="dash">--</td><td><span class="chip chip-grey">No</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <!-- Active -->
+    <div class="tab-panel active" data-grp="dash">
+      <div class="group-bar"><span class="group-chev">▾</span><span class="group-name">Pre-lodgement Review (7 days)</span><span class="group-count">(1)</span></div>
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Age <span class="sort">↓</span></th><th>PAN ID</th><th>Application</th><th>Address</th><th>Application type</th><th>Development type</th><th>Referrals</th><th>Forwarded</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA445607 — detail view not part of this concept')"><td>49 days</td><td>PAN-12607035</td><td><span class="da-link">DA445607</span></td><td>138 Skye Point Road, Coal Point NSW 2283</td><td>Development application</td><td>Residential</td><td class="dash">--</td><td><span class="chip chip-green">Yes</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="group-bar" style="border-top:1px solid var(--border);"><span class="group-chev">▾</span><span class="group-name">Planning - General</span><span class="group-count">(1)</span></div>
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Age <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Application type</th><th>Development type</th><th>Referrals</th><th>Compliance</th><th>RFI Letter</th><th>Determination</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA215173 — detail view not part of this concept')">
+            <td>35 days</td><td><span class="da-link">DA215173</span></td><td>30 Walter Street, Paddington NSW 2021</td>
+            <td>Development application</td><td>Residential</td>
+            <td><span class="chip chip-grey">Not started</span></td>
+            <td><span class="chip chip-amber">▶ In progress 36/65</span></td>
+            <td><span class="chip chip-pink">✎ R1 · Draft</span></td>
+            <td><span class="chip chip-yellow">Recommendation made</span></td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <!-- Determine -->
+    <div class="tab-panel" data-grp="dash">
+      <div class="group-bar"><span class="group-chev">▾</span><span class="group-name">Awaiting determination</span><span class="group-count">(2)</span></div>
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Age <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Compliance</th><th>RFI Letter</th><th>Determination</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA047158 — detail view not part of this concept')"><td>41 days</td><td><span class="da-link">DA047158</span></td><td>174 Skye Point Road, Coal Point NSW 2283</td><td>Residential</td><td><span class="chip chip-green">Complete</span></td><td><span class="chip chip-pink">✎ R2 · Draft</span></td><td><span class="chip chip-yellow">Recommendation made</span></td></tr>
+          <tr onclick="showToast('DA365451 — detail view not part of this concept')"><td>37 days</td><td><span class="da-link">DA365451</span></td><td>79 Walter Street, Paddington NSW 2021</td><td>Residential</td><td><span class="chip chip-green">Complete</span></td><td><span class="chip chip-pink">✎ R1 · Draft</span></td><td><span class="chip chip-yellow">Recommendation made</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <!-- Completed -->
+    <div class="tab-panel" data-grp="dash">
+      <div class="group-bar"><span class="group-chev">▾</span><span class="group-name">Determined — last 30 days</span><span class="group-count">(3)</span></div>
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Determined <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Gross days</th><th>Determination</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA771204 — detail view not part of this concept')"><td>3 days ago</td><td><span class="da-link">DA771204</span></td><td>12 Cabarita Road, Cabarita NSW 2137</td><td>Residential</td><td>76</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('DA662018 — detail view not part of this concept')"><td>9 days ago</td><td><span class="da-link">DA662018</span></td><td>5 Russell Lea Avenue, Russell Lea NSW 2046</td><td>Multi-dwelling</td><td>91</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('DA509337 — detail view not part of this concept')"><td>18 days ago</td><td><span class="da-link">DA509337</span></td><td>88 Wareemba Street, Wareemba NSW 2046</td><td>Residential</td><td>112</td><td><span class="chip chip-red">Refused</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end screen-dashboard -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 2 — ALL APPLICATIONS (whole-of-council widgets)
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-applications">
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <div class="page-title">Applications</div>
+      <div class="page-sub">Active applications from lodgement · <strong>Concepts for discussion — please confirm these are the right statistics</strong></div>
+    </div>
+  </div>
+
+  <!-- CONTEXT PANEL -->
+  <div class="bg-panel">
+    <div class="bg-panel-header" onclick="toggleBP('apps')">
+      <span class="bg-tag">Prototype context</span>
+      <span class="bg-title">Background &amp; design rationale — whole-of-council reporting widgets</span>
+      <span class="bg-chev" id="chev-apps">▾</span>
+    </div>
+    <div class="bg-body" id="bp-apps">
+      <div class="bg-row">
+        <div class="bg-lbl">What this screen does</div>
+        <div class="bg-txt">Adds a row of whole-of-council reporting widgets to the top of the Applications page, above the existing application list. The widget set is standardised with the user dashboard: the same widgets appear on both screens, scoped to <strong>"All"</strong> here and <strong>"My"</strong> there. Widget 9 (Avg lodgement days) is exclusive to this screen. A data export section extracts assessment and referral data for use in external reporting tools such as Power BI.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Why designed this way</div>
+        <div class="bg-txt">These widgets began as a separate "planning leadership" dashboard. They have been folded into the Applications page instead, because that page already holds the whole-of-council data set the widgets describe — a leader reading a council-wide number and then wanting the rows behind it should not have to change screens. Personal caseload widgets remain on the user dashboard. Foundation partner research (Canada Bay, North Sydney, Ryde, Hornsby) confirmed councils need to monitor assessment speed in real time against tightening targets: 105 days for FY 25–26, reducing to 85 days by FY 27–28.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Audience</div>
+        <div class="bg-txt">Any user with access to the Applications page. The widgets are no longer framed around a leadership persona — they are page-level statistics describing the council's whole application set, so they show the same figures to every user who can see the page.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Design decisions</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the user dashboard plus widget 9. Widget 5 is excluded per the spec. Widgets 7, 8, 10 and 11 are tagged "Later phase" — 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 9. Counts (1, 2, 3) compare against the previous calendar month. Duration widgets carry a council-set target — <code>gross.days.target</code>, <code>vet.days.target</code> and <code>net.days.target</code> — because NSW targets are revised annually with the state government and each council sets its own. Widgets 4, 6 and 10 state the target only; widget 9 also states the variance against it. Every displayed value must be reachable via API so the same figures can be pulled into Power BI. Widgets report whole-of-council and do not follow the list filters; a "Whole of council" chip makes that explicit. The export sits below the application list and produces two flat CSV tables rather than one joined table, matching the structure councils need for Power BI ingestion.</div>
+      </div>
+      <div class="bg-row">
+        <div class="bg-lbl">Open questions</div>
+        <div class="bg-txt"><span class="q">1.</span> Fixed whole-of-council scope means a user can read "142 active" while the filtered list below shows three rows. Is the scope chip enough, or should the widgets follow the filters? <span class="q">2.</span> Should the row also appear on the Completed tab, where several metrics no longer apply? <span class="q">3.</span> Where do councils set the three target values, and who is allowed to change them? <span class="q">4.</span> Counts compare to the previous <em>calendar</em> month, so early in a month widgets 2 and 3 will always look down — is a rolling comparison better? <span class="q">5.</span> Widget 9 states its variance against target while 4, 6 and 10 state the target alone — should that be consistent? <span class="q">6.</span> Should any figures be role-restricted, or is whole-of-council performance open to all users?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHOLE-OF-COUNCIL REPORTING WIDGETS -->
+  <div class="rband" id="rband-council">
+    <div class="rband-head">
+      <div class="rband-title-wrap">
+        <span class="rband-dot"></span>
+        <div>
+          <div class="rband-name">Performance overview</div>
+          <div class="rband-sub">All active applications across the council</div>
+        </div>
+      </div>
+      <div class="rband-right">
+        <span class="scope-chip" onclick="showToast('Widgets always report whole of council — they do not follow the list filters below')">Whole of council</span>
+        <span class="rband-counter" id="council-counter">Showing 1–4 of 10</span>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="council-prev" onclick="scrollCarousel('council',-1)" disabled>
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6z"/></svg>
+          </button>
+          <div class="carousel-dots" id="council-dots"></div>
+          <button class="carousel-btn" id="council-next" onclick="scrollCarousel('council',1)">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6z"/></svg>
+          </button>
+        </div>
+        <button class="rband-collapse" onclick="toggleBand('council',this)">Hide</button>
+      </div>
+    </div>
+    <div class="rband-body">
+      <div class="carousel-viewport" id="council-viewport">
+        <div class="carousel-track" id="council-track">
+
+          <div class="kpi-card" onclick="showToast('Active Applications — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">1</span>Active Applications</div></div>
+            <div class="kpi-value">142</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 8</span><span class="cmp-note">vs last month (134)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Lodged This Month — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">2</span>Lodged This Month</div></div>
+            <div class="kpi-value">23</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 3</span><span class="cmp-note">vs last month (20)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">3</span>Determined This Month</div></div>
+            <div class="kpi-value">31</div><div class="kpi-cmp"><span class="cmp-delta up">↑ 5</span><span class="cmp-note">vs last month (26)</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Avg Gross Days — Active — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">4</span>Avg Gross Days — Active</div></div>
+            <div class="kpi-value val-good">68<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 105 days</span></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Overdue Applications — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">6</span>Overdue Applications</div></div>
+            <div class="kpi-value val-alert">11</div><div class="kpi-cmp"><span class="cmp-badge">Council target 105 days</span></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Overdue Internal Referrals — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">7</span>Overdue Internal Referrals</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value">9</div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Active by Type — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">8</span>Active by Type</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-type-list"><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#1d1d1f;"></span><span class="kpi-type-name">DA</span><span class="kpi-type-count">95</span><span class="kpi-type-pct">67%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#ff9500;"></span><span class="kpi-type-name">MA</span><span class="kpi-type-count">32</span><span class="kpi-type-pct">23%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#c7c7cc;"></span><span class="kpi-type-name">Other</span><span class="kpi-type-count">15</span><span class="kpi-type-pct">11%</span></div></div>
+          </div>
+          <div class="kpi-card" onclick="showToast('Avg Lodgement Days — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">9</span>Avg Lodgement Days</div></div>
+            <div class="kpi-value val-good">5<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 7 days</span><span class="cmp-good">2 days inside</span></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Avg Net Days — Active — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">10</span>Avg Net Days — Active</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value val-good">61<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 90 days</span></div>
+          </div>
+          <div class="kpi-card future" onclick="showToast('Clock Stopped — detail view coming in a later phase')">
+            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">11</span>Clock Stopped</div><span class="kpi-phase">Later phase</span></div>
+            <div class="kpi-value">12</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LIST -->
+  <div class="work-card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('apps',0,this)">Active</button>
+      <button class="tab" onclick="switchTab('apps',1,this)">Completed</button>
+    </div>
+
+    <div class="tab-panel active" data-grp="apps">
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list — widgets above always report whole of council')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Age <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Assessing officer</th><th>Team</th><th>Referrals</th><th>Compliance</th><th>RFI Letter</th><th>Determination</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA047158 — detail view not part of this concept')">
+            <td>41 days</td><td><span class="da-link">DA047158</span></td><td>174 Skye Point Road, Coal Point NSW 2283</td><td>Residential</td>
+            <td><div class="cell-officer"><span class="avatar-xs av-np">NP</span>Nigel Paxton</div></td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-grey">Not started</span></td><td class="dash">--</td>
+            <td><span class="chip chip-pink">✎ R2 · Draft</span></td><td><span class="chip chip-yellow">Recommendation made</span></td>
+          </tr>
+          <tr onclick="showToast('DA365451 — detail view not part of this concept')">
+            <td>37 days</td><td><span class="da-link">DA365451</span></td><td>79 Walter Street, Paddington NSW 2021</td><td>Residential</td>
+            <td><div class="cell-officer"><span class="avatar-xs av-np">NP</span>Nigel Paxton</div></td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-grey">Not started</span></td><td class="dash">--</td>
+            <td><span class="chip chip-pink">✎ R1 · Draft</span></td><td><span class="chip chip-yellow">Recommendation made</span></td>
+          </tr>
+          <tr onclick="showToast('DA215173 — detail view not part of this concept')">
+            <td>35 days</td><td><span class="da-link">DA215173</span></td><td>30 Walter Street, Paddington NSW 2021</td><td>Residential</td>
+            <td><div class="cell-officer"><span class="avatar-xs av-sr">SR</span>Sean Richards</div></td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-grey">Not started</span></td>
+            <td><span class="chip chip-amber">▶ In progress 36/65</span></td>
+            <td><span class="chip chip-pink">✎ R1 · Draft</span></td><td><span class="chip chip-yellow">Recommendation made</span></td>
+          </tr>
+          <tr onclick="showToast('DA456229 — detail view not part of this concept')">
+            <td>16 days</td><td><span class="da-link">DA456229</span></td><td>127 Skye Point Road, Coal Point NSW 2283</td><td>Residential</td>
+            <td><div class="cell-officer"><span class="avatar-xs av-hs">HS</span>Hayley Stand</div></td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td class="dash">--</td><td class="dash">--</td><td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
+          </tr>
+          <tr onclick="showToast('DA974289 — detail view not part of this concept')">
+            <td>15 days</td><td><span class="da-link">DA974289</span></td><td>10 Kent Street, Sydney NSW 2000</td><td>Residential</td>
+            <td class="dash">--</td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-grey">Not started</span></td><td class="dash">--</td><td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
+          </tr>
+          <tr onclick="showToast('DA026105 — detail view not part of this concept')">
+            <td>3 days</td><td><span class="da-link">DA026105</span></td><td>28 Walter Street, Paddington NSW 2021</td><td>Residential</td>
+            <td><div class="cell-officer"><span class="avatar-xs av-ri">RI</span>Romina Iwikau</div></td>
+            <td><span class="chip chip-team">Planning Team East</span></td>
+            <td><span class="chip chip-grey">Not started</span></td>
+            <td><span class="chip chip-amber">▶ In progress 37/72</span></td>
+            <td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
+          </tr>
+          <tr onclick="showToast('DA445607 — detail view not part of this concept')">
+            <td><span class="chip chip-pink">Not lodged</span></td><td><span class="da-link">DA445607</span></td><td>138 Skye Point Road, Coal Point NSW 2283</td><td>Residential</td>
+            <td class="dash">--</td>
+            <td><span class="chip chip-team">Planning - General</span></td>
+            <td class="dash">--</td><td class="dash">--</td><td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="tab-panel" data-grp="apps">
+      <div class="table-tools">
+        <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+      </div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Determined <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Assessing officer</th><th>Team</th><th>Gross days</th><th>Net days</th><th>Determination</th></tr></thead>
+        <tbody>
+          <tr onclick="showToast('DA771204 — detail view not part of this concept')"><td>3 days ago</td><td><span class="da-link">DA771204</span></td><td>12 Cabarita Road, Cabarita NSW 2137</td><td>Residential</td><td><div class="cell-officer"><span class="avatar-xs av-sr">SR</span>Sean Richards</div></td><td><span class="chip chip-team">Planning - General</span></td><td>76</td><td>61</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('DA662018 — detail view not part of this concept')"><td>9 days ago</td><td><span class="da-link">DA662018</span></td><td>5 Russell Lea Avenue, Russell Lea NSW 2046</td><td>Multi-dwelling</td><td><div class="cell-officer"><span class="avatar-xs av-np">NP</span>Nigel Paxton</div></td><td><span class="chip chip-team">Planning - General</span></td><td>91</td><td>74</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('DA509337 — detail view not part of this concept')"><td>18 days ago</td><td><span class="da-link">DA509337</span></td><td>88 Wareemba Street, Wareemba NSW 2046</td><td>Residential</td><td><div class="cell-officer"><span class="avatar-xs av-hs">HS</span>Hayley Stand</div></td><td><span class="chip chip-team">Planning Team East</span></td><td>112</td><td>88</td><td><span class="chip chip-red">Refused</span></td></tr>
+          <tr onclick="showToast('MA221847 — detail view not part of this concept')"><td>24 days ago</td><td><span class="da-link">MA221847</span></td><td>16 Great North Road, Five Dock NSW 2046</td><td>Commercial</td><td><div class="cell-officer"><span class="avatar-xs av-ri">RI</span>Romina Iwikau</div></td><td><span class="chip chip-team">Planning - General</span></td><td>54</td><td>54</td><td><span class="chip chip-green">Approved</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="export-band">
+    <div class="export-head" onclick="toggleExport(this)" style="cursor:pointer;">
+      <div class="rband-title-wrap">
+        <span class="rband-dot" style="background:var(--ink);"></span>
+        <div>
+          <div class="rband-name">Export data</div>
+          <div class="rband-sub">Extract Build AU data for use in external reporting tools</div>
+        </div>
+      </div>
+      <div class="rband-right">
+        <span class="scope-chip">Whole of council</span>
+        <span class="bg-chev" id="chev-export">▾</span>
+      </div>
+    </div>
+    <div class="export-body" id="export-body" style="display:none;">
+      <div class="export-trigger-row">
+        <button class="export-btn" onclick="toggleExportPanel()">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span id="export-btn-label">Prepare export</span>
+        </button>
+        <select class="export-timeframe" id="export-timeframe" onchange="updateRowCounts()">
+          <option value="month">This month</option>
+          <option value="rolling30">Rolling 30 days</option>
+          <option value="3months">Last 3 months</option>
+          <option value="6months">Last 6 months</option>
+          <option value="12months">Last 12 months</option>
+        </select>
+        <span class="export-hint" id="export-hint">Select a timeframe then click Prepare export to preview the data that will be downloaded</span>
+      </div>
+
+      <div class="export-panel" id="export-panel">
+        <div class="export-panel-label" id="export-panel-label">Data preview — This month</div>
+        <div class="export-tables-row">
+          <div class="export-table-card">
+            <div class="export-table-head">
+              <div><div class="export-table-title">DA Assessment</div><div class="export-table-desc">All applications in the selected period</div></div>
+              <span class="export-row-count" id="da-row-count">~31 rows</span>
+            </div>
+            <table class="export-col-table">
+              <tr><td>DA Number</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Address</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Description</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>DA Type</td><td><span class="export-col-type">Text</span>DA / MA / Other</td></tr>
+              <tr><td>New Dwellings</td><td><span class="export-col-type">Number</span></td></tr>
+              <tr><td>Applicant Name</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Date Submitted</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Lodged</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Allocated</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Assessment Start</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Allocated Officer</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>STC</td><td><span class="export-col-type">Boolean</span>Yes / No</td></tr>
+              <tr><td>Date RFI Sent</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date RFI Responded</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Recommendation Date</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Determined</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Determination Days</td><td><span class="export-col-type">Number</span></td></tr>
+              <tr><td>Status</td><td><span class="export-col-type">Text</span>Allocated / In progress / Determined / Withdrawn</td></tr>
+              <tr><td>Determination</td><td><span class="export-col-type">Text</span>Approved / Refused / Deferred consent</td></tr>
+              <tr><td>Determination Authority</td><td><span class="export-col-type">Text</span></td></tr>
+            </table>
+          </div>
+          <div class="export-table-card">
+            <div class="export-table-head">
+              <div><div class="export-table-title">Internal Referrals</div><div class="export-table-desc">All referrals in the selected period</div></div>
+              <span class="export-row-count" id="ref-row-count">~58 rows</span>
+            </div>
+            <table class="export-col-table">
+              <tr><td>DA Number</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Address</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Allocated Officer</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Referral Body / Team</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Assigned Officer</td><td><span class="export-col-type">Text</span></td></tr>
+              <tr><td>Date Issued</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Assigned</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Started</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Responded</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>Date Completed</td><td><span class="export-col-type">Date</span></td></tr>
+              <tr><td>KPI Time</td><td><span class="export-col-type">Number</span>Days e.g. 14, 21</td></tr>
+              <tr><td>Status</td><td><span class="export-col-type">Text</span>Not started / In progress / Responded / Completed</td></tr>
+              <tr><td>Position</td><td><span class="export-col-type">Text</span>Supported / Not supported / RFI/Design change</td></tr>
+              <tr><td>Conditions</td><td><span class="export-col-type">Boolean</span>Yes / No</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="export-dl-row">
+          <button class="export-dl-btn" onclick="showToast('Downloading CSV files…')">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download CSV
+          </button>
+          <span class="export-dl-note">2 files · DA_Assessment.csv + Internal_Referrals.csv</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end screen-applications -->
+
+</div><!-- end main -->
+
+<div class="proto-switch">
+  <button id="sw-dashboard" class="active" onclick="switchScreen('dashboard')">User dashboard</button>
+  <button id="sw-applications" onclick="switchScreen('applications')">All applications</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- PASSWORD GATE -->
+<div class="proto-tag">Build AU — Performance Reporting Widgets (Concept v8) — This is a concept demonstration only and does not conform to the Objective Design Language. Commercial in confidence.</div>
+
 <div class="gate" id="gate">
-  <div class="gate-panel">
-    <div class="gate-left">
-      <div class="gate-logo">
-        <svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>
-      </div>
-      <div class="gate-brand">Build AU</div>
-      <div class="gate-proto-name">Performance Reporting Dashboard</div>
-      <div class="gate-meta">
-        <div class="gate-meta-item">
-          <div class="gate-meta-label">Version</div>
-          <div class="gate-meta-value">v1.1</div>
-        </div>
-        <div class="gate-meta-item">
-          <div class="gate-meta-label">Last updated</div>
-          <div class="gate-meta-value">26 March 2026</div>
-        </div>
-      </div>
-    </div>
-    <div class="gate-right">
-      <div class="gate-heading">Restricted access</div>
-      <div class="gate-sub">Enter the password below to view this demonstrator.</div>
-      <div class="gate-disclaimer">
-        <p>This is a <strong>demonstrator</strong> for use to explore concepts. It is not a product and is not designed using ODL. For questions, contact <strong>Sean Richards</strong>.</p>
-      </div>
-      <div class="gate-input-label">Password</div>
-      <input class="gate-input" id="gate-input" type="password" placeholder="••••••••••••"
-        autocomplete="current-password" onkeydown="if(event.key==='Enter') checkPassword()">
-      <button class="gate-btn" onclick="checkPassword()">Continue</button>
-      <div class="gate-error" id="gate-error"></div>
-      <div class="gate-footer">Objective Corporation · Concept demonstrator only</div>
-    </div>
+  <div class="gate-box">
+    <div class="gate-title">Build AU — Reporting Concepts</div>
+    <div class="gate-sub">This prototype is commercial in confidence.<br>Enter the access password to continue.</div>
+    <input class="gate-input" id="gate-input" type="password" placeholder="••••••••••••"
+           onkeydown="if(event.key==='Enter')checkPassword()">
+    <button class="gate-btn" onclick="checkPassword()">Continue</button>
+    <div class="gate-error" id="gate-error"></div>
   </div>
 </div>
 
 <script>
-  // ── Password gate ──────────────────────────────
-  (function() {
-    if (sessionStorage.getItem('proto_auth') === '1') {
-      document.getElementById('gate').style.display = 'none';
-    }
-  })();
+/* ── Password gate ── */
+(function(){ if(sessionStorage.getItem('proto_auth')==='1') document.getElementById('gate').style.display='none'; })();
+function checkPassword(){
+  const i=document.getElementById('gate-input'), e=document.getElementById('gate-error');
+  if(i.value==='objective2026'){ sessionStorage.setItem('proto_auth','1'); document.getElementById('gate').style.display='none'; }
+  else{ i.classList.remove('gate-shake'); void i.offsetWidth; i.classList.add('gate-shake'); e.textContent='Incorrect password. Try again.'; }
+}
 
-  function checkPassword() {
-    const input = document.getElementById('gate-input');
-    const err   = document.getElementById('gate-error');
-    if (input.value === 'objective2026') {
-      sessionStorage.setItem('proto_auth', '1');
-      document.getElementById('gate').style.display = 'none';
-    } else {
-      input.classList.remove('gate-shake');
-      void input.offsetWidth;
-      input.classList.add('gate-shake');
-      err.textContent = 'Incorrect password. Try again.';
-    }
-  }
-
-  // ── Prototype context panel ───────────────────
-  function toggleBP(id) {
-    const b = document.getElementById('bp-' + id);
-    const c = document.getElementById('chev-' + id);
-    const o = b.classList.toggle('open');
-    c.classList.toggle('open', o);
-  }
-
-  // ── Carousel ───────────────────────────────────
-  const carousels = {};
-
-  function initCarousel(id, total, perPage) {
-    carousels[id] = { index: 0, total, perPage, pages: Math.ceil(total / perPage) };
-    buildDots(id);
-    updateCarousel(id);
-  }
-
-  function buildDots(id) {
-    const c = carousels[id];
-    const container = document.getElementById(id + '-dots');
-    container.innerHTML = '';
-    for (let i = 0; i < c.pages; i++) {
-      const d = document.createElement('div');
-      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      d.onclick = () => { c.index = i; updateCarousel(id); };
-      container.appendChild(d);
-    }
-  }
-
-  function scrollCarousel(id, dir) {
-    const c = carousels[id];
-    c.index = Math.max(0, Math.min(c.pages - 1, c.index + dir));
-    updateCarousel(id);
-  }
-
-  function updateCarousel(id) {
-    const c = carousels[id];
-    const track = document.getElementById(id + '-track');
-    const viewport = document.getElementById(id + '-viewport');
-    const cards = track.querySelectorAll('.kpi-card');
-    const firstCard = cards[c.index * c.perPage];
-    const offset = firstCard ? firstCard.offsetLeft : 0;
-    track.style.transform = `translateX(-${offset}px)`;
-
-    document.querySelectorAll(`#${id}-dots .carousel-dot`).forEach((d, i) => d.classList.toggle('active', i === c.index));
-    document.getElementById(id + '-prev').disabled = c.index === 0;
-    document.getElementById(id + '-next').disabled = c.index >= c.pages - 1;
-
-    const start = c.index * c.perPage + 1;
-    const end = Math.min((c.index + 1) * c.perPage, c.total);
-    document.getElementById(id + '-counter').textContent = `Showing ${start}–${end} of ${c.total}`;
-  }
-
-  // ── Export panel ───────────────────────────────
-  let exportOpen = false;
-
-  const rowCounts = {
-    month:     { da: '~31',  ref: '~58'  },
-    rolling30: { da: '~34',  ref: '~63'  },
-    '3months': { da: '~96',  ref: '~174' },
-    '6months': { da: '~188', ref: '~341' },
-    '12months':{ da: '~371', ref: '~682' }
-  };
-
-  const periodLabels = {
-    month:     'This month',
-    rolling30: 'Rolling 30 days',
-    '3months': 'Last 3 months',
-    '6months': 'Last 6 months',
-    '12months':'Last 12 months'
-  };
-
-  function updateRowCounts() {
-    const period = document.getElementById('export-timeframe').value;
-    const counts = rowCounts[period];
-    document.getElementById('da-row-count').textContent = counts.da + ' rows';
-    document.getElementById('ref-row-count').textContent = counts.ref + ' rows';
-    document.getElementById('export-panel-label').textContent = 'Data preview — ' + periodLabels[period];
-    document.getElementById('export-dl-note').textContent = '2 files · DA_Assessment.csv + Internal_Referrals.csv';
-  }
-
-  function toggleExportPanel() {
-    exportOpen = !exportOpen;
-    const panel = document.getElementById('export-panel');
-    const btnLabel = document.getElementById('export-btn-label');
-    const hint = document.getElementById('export-hint');
-    if (exportOpen) {
-      panel.classList.add('visible');
-      btnLabel.textContent = 'Hide Preview';
-      hint.textContent = '';
-      updateRowCounts();
-    } else {
-      panel.classList.remove('visible');
-      btnLabel.textContent = 'Prepare Export';
-      hint.textContent = 'Select a timeframe then click Prepare Export to preview the data that will be downloaded';
-    }
-  }
-
-  // ── Toast ──────────────────────────────────────
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2200);
-  }
-
-  // ── Sidebar ────────────────────────────────────
-  document.querySelectorAll('.sidebar-item').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
+/* ── Screen switching ── */
+function switchScreen(name){
+  ['dashboard','applications'].forEach(s=>{
+    document.getElementById('screen-'+s).classList.toggle('active', s===name);
+    document.getElementById('sw-'+s).classList.toggle('active', s===name);
+    document.getElementById('nav-'+s).classList.toggle('active', s===name);
   });
+  window.scrollTo({top:0,behavior:'instant'});
+  ['mine','council'].forEach(id=>{ if(carousels[id]) updateCarousel(id); });
+}
 
-  // ── Init ───────────────────────────────────────
-  window.addEventListener('load', () => {
-    initCarousel('bronwyn', 11, 4);
-    initCarousel('ralph', 11, 4);
-  });
-  window.addEventListener('resize', () => {
-    updateCarousel('bronwyn');
-    updateCarousel('ralph');
-  });
+/* ── Context panel ── */
+function toggleBP(id){
+  const b=document.getElementById('bp-'+id), c=document.getElementById('chev-'+id);
+  c.classList.toggle('open', b.classList.toggle('open'));
+}
+
+/* ── Reporting band collapse ── */
+function toggleBand(id,btn){
+  const band=document.getElementById('rband-'+id);
+  const collapsed=band.classList.toggle('collapsed');
+  btn.textContent = collapsed ? 'Show' : 'Hide';
+  if(!collapsed) updateCarousel(id);
+}
+
+/* ── Tabs ── */
+function switchTab(grp,idx,btn){
+  const card=btn.closest('.work-card');
+  card.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const panels=card.querySelectorAll('.tab-panel[data-grp="'+grp+'"]');
+  panels.forEach((p,i)=>p.classList.toggle('active', i===idx));
+}
+
+/* ── Carousel ── */
+const carousels={};
+function initCarousel(id,total,perPage){
+  carousels[id]={index:0,total,perPage,pages:Math.ceil(total/perPage)};
+  buildDots(id); updateCarousel(id);
+}
+function buildDots(id){
+  const c=carousels[id], box=document.getElementById(id+'-dots');
+  box.innerHTML='';
+  for(let i=0;i<c.pages;i++){
+    const d=document.createElement('div');
+    d.className='carousel-dot'+(i===0?' active':'');
+    d.onclick=()=>{ c.index=i; updateCarousel(id); };
+    box.appendChild(d);
+  }
+}
+function scrollCarousel(id,dir){
+  const c=carousels[id];
+  c.index=Math.max(0,Math.min(c.pages-1,c.index+dir));
+  updateCarousel(id);
+}
+function updateCarousel(id){
+  const c=carousels[id];
+  const track=document.getElementById(id+'-track');
+  const cards=track.querySelectorAll('.kpi-card');
+  const first=cards[c.index*c.perPage];
+  const base=cards[0]?cards[0].offsetLeft:0;
+  track.style.transform='translateX(-'+(first?(first.offsetLeft-base):0)+'px)';
+  document.querySelectorAll('#'+id+'-dots .carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===c.index));
+  document.getElementById(id+'-prev').disabled = c.index===0;
+  document.getElementById(id+'-next').disabled = c.index>=c.pages-1;
+  const start=c.index*c.perPage+1, end=Math.min((c.index+1)*c.perPage,c.total);
+  document.getElementById(id+'-counter').textContent='Showing '+start+'–'+end+' of '+c.total;
+}
+
+/* ── Export band collapse ── */
+function toggleExport(head){
+  const body=document.getElementById('export-body');
+  const chev=document.getElementById('chev-export');
+  const open = body.style.display==='none';
+  body.style.display = open ? 'block' : 'none';
+  chev.classList.toggle('open', open);
+}
+
+/* ── Export panel ── */
+let exportOpen=false;
+const rowCounts={month:{da:'~31',ref:'~58'},rolling30:{da:'~34',ref:'~63'},'3months':{da:'~96',ref:'~174'},'6months':{da:'~188',ref:'~341'},'12months':{da:'~371',ref:'~682'}};
+const periodLabels={month:'This month',rolling30:'Rolling 30 days','3months':'Last 3 months','6months':'Last 6 months','12months':'Last 12 months'};
+function updateRowCounts(){
+  const p=document.getElementById('export-timeframe').value, c=rowCounts[p];
+  document.getElementById('da-row-count').textContent=c.da+' rows';
+  document.getElementById('ref-row-count').textContent=c.ref+' rows';
+  document.getElementById('export-panel-label').textContent='Data preview — '+periodLabels[p];
+}
+function toggleExportPanel(){
+  exportOpen=!exportOpen;
+  const panel=document.getElementById('export-panel');
+  const label=document.getElementById('export-btn-label');
+  const hint=document.getElementById('export-hint');
+  if(exportOpen){ panel.classList.add('visible'); label.textContent='Hide preview'; hint.textContent=''; updateRowCounts(); }
+  else{ panel.classList.remove('visible'); label.textContent='Prepare export'; hint.textContent='Select a timeframe then click Prepare export to preview the data that will be downloaded'; }
+}
+
+/* ── Toast ── */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ── Init ── */
+window.addEventListener('DOMContentLoaded',()=>{
+  switchScreen('dashboard');
+  initCarousel('mine',10,4);
+  initCarousel('council',10,4);
+});
+window.addEventListener('resize',()=>{ ['mine','council'].forEach(id=>{ if(carousels[id]) updateCarousel(id); }); });
 </script>
-
 <script src="https://build-au-feedback-widget.vercel.app/feedback-widget.js"></script>
 </body>
 </html>
