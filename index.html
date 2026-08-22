@@ -123,14 +123,50 @@ button{font-family:inherit;}
 .bg-txt .q{color:var(--warning-text);font-weight:600;}
 
 /* ══ REPORTING BAND ══ */
-.rband{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
-.rband-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 16px 10px;border-bottom:1px solid var(--border-light);background:#fafafb;}
+.rband{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;}
+.rband-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 16px 10px;border-bottom:1px solid var(--border-light);background:#fafafb;border-radius:var(--radius) var(--radius) 0 0;}
 .rband-title-wrap{display:flex;align-items:center;gap:9px;}
 .rband-dot{width:8px;height:8px;border-radius:50%;background:var(--ob-blue);flex-shrink:0;}
 .rband-name{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.2px;}
 .rband-sub{font-size:11px;color:var(--ink-light);margin-top:1px;}
 .rband-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .scope-chip{font-size:10px;font-weight:600;color:var(--ink-med);background:var(--neutral-bg);border:1px solid var(--border);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+
+/* ══ SCOPE CONTROL ══ */
+.rband.scoped{border-color:#c3d6ec;}
+.rband.scoped .rband-head{background:var(--ob-blue-bg);}
+.rband.scoped::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ob-blue);border-radius:var(--radius) 0 0 var(--radius);z-index:2;}
+.rband{position:relative;}
+.scope-wrap{position:relative;flex-shrink:0;}
+.scope-select{
+  display:flex;align-items:center;gap:7px;background:var(--card);
+  border:1px solid var(--border);border-radius:20px;padding:4px 11px 4px 9px;
+  font-size:11px;font-weight:600;color:var(--ink);cursor:pointer;
+  transition:all .15s;white-space:nowrap;box-shadow:var(--shadow-sm);
+}
+.scope-select:hover{border-color:var(--ob-blue);background:var(--card-hover);}
+.scope-select .sc-kind{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-light);}
+.rband.scoped .scope-select .sc-kind{color:var(--ob-blue);}
+.scope-select .sc-chev{font-size:8px;color:var(--ink-faint);}
+.scope-menu{
+  position:absolute;top:calc(100% + 6px);left:0;width:290px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  z-index:120;padding:5px;display:none;
+}
+.scope-menu.open{display:block;}
+.scope-group{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);padding:7px 9px 4px;}
+.scope-opt{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  border:none;background:none;text-align:left;padding:7px 9px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:background .15s;
+}
+.scope-opt:hover{background:var(--neutral-bg);}
+.scope-opt.sel{background:var(--ob-blue-bg);}
+.scope-opt-name{font-size:12px;font-weight:500;color:var(--ink);}
+.scope-opt.sel .scope-opt-name{color:var(--ob-blue);font-weight:600;}
+.scope-opt-count{font-size:11px;font-weight:700;color:var(--ink-light);white-space:nowrap;}
+.scope-opt.sel .scope-opt-count{color:var(--ob-blue);}
+.scope-sep{height:1px;background:var(--border-light);margin:5px 3px;}
 .rband-counter{font-size:11px;color:var(--ink-faint);font-weight:500;white-space:nowrap;}
 .rband-collapse{border:1px solid var(--border);background:var(--card);border-radius:6px;font-size:10px;font-weight:600;color:var(--ink-med);padding:4px 9px;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .rband-collapse:hover{background:var(--neutral-bg);}
@@ -139,7 +175,7 @@ button{font-family:inherit;}
 
 /* ══ COMPACT KPI CARDS ══ */
 .carousel-viewport{overflow:hidden;position:relative;}
-.carousel-track{display:flex;gap:12px;transition:transform .35s cubic-bezier(.4,0,.2,1);}
+.carousel-track{display:flex;gap:12px;align-items:stretch;}
 .kpi-card{
   flex:0 0 calc(25% - 9px);min-width:0;background:var(--card);
   border-radius:10px;padding:13px 14px 14px;border:1px solid var(--border);
@@ -174,6 +210,14 @@ button{font-family:inherit;}
 .kpi-card.future .kpi-value,.kpi-card.future .kpi-type-count{color:var(--ink-light);}
 .kpi-phase{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:#eef0f5;color:#5a6478;border:1px dashed #c6cbd6;}
 .kpi-target code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;background:var(--neutral-bg);padding:0 3px;border-radius:3px;color:var(--ink-med);}
+.kpi-scope{
+  display:inline-block;align-self:flex-start;font-size:9px;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;padding:2px 6px;border-radius:4px;
+  background:var(--neutral-bg);color:var(--ink-light);margin-bottom:8px;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.kpi-scope.team{background:var(--ob-blue-bg);color:var(--ob-blue);}
+.cmp-lowvol{font-size:9px;font-weight:600;color:var(--warning-text);background:var(--warning-bg);border:1px solid #f5dcae;padding:2px 6px;border-radius:4px;white-space:nowrap;}
 
 
 .kpi-type-list{display:flex;flex-direction:column;gap:6px;margin:2px 0 0;}
@@ -396,7 +440,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
     <div class="bg-body" id="bp-dash">
       <div class="bg-row">
         <div class="bg-lbl">What this screen does</div>
-        <div class="bg-txt">Places a row of personal performance widgets at the top of the logged-in user's dashboard, directly above their existing work lists. The widget set is standardised with the Applications page: the same widgets appear on both screens, scoped to <strong>"My"</strong> here and <strong>"All"</strong> there. Widget 12 (RFI letters in progress) is exclusive to this screen. Everything below the widget row is the existing dashboard: the Admin, Active, Determine and Completed tabs and their grouped work queues.</div>
+        <div class="bg-txt">Places a row of personal performance widgets at the top of the logged-in user's dashboard, directly above their existing work lists. The row is fixed to <strong>My work</strong> — the applications allocated to the logged-in user — and carries no scope control. Team and whole-of-council figures live on the Applications page. The widget set, card anatomy and comparison rules are otherwise identical to that page; widget 12 (RFI letters in progress) is exclusive to this screen. Everything below the widget row is the existing dashboard: the Admin, Active, Determine and Completed tabs and their grouped work queues.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Why designed this way</div>
@@ -404,15 +448,15 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Audience</div>
-        <div class="bg-txt">Every user with an assessment caseload — Senior Statutory Planners, assessing officers, and team leaders looking at their own work rather than the team's. The widgets always describe the logged-in user, so no persona switch or role check is needed.</div>
+        <div class="bg-txt">Every user with an assessment caseload — Senior Statutory Planners, assessing officers, and team leaders looking at their own work rather than the team's. The widgets always describe the logged-in user, so no persona switch or role check is needed. A team leader who wants her team's numbers goes to the Applications page and selects the team there; the dashboard stays personal.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Design decisions</div>
-        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the Applications page plus widget 12. Widget 5 is excluded per the spec as too close to widget 4. Widgets 7, 8, 10 and 11 are drawn with a dashed border and a "Later phase" tag — 7 until team performance periods are implemented, 8 until the planning-reform application types settle, and 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 12. Counts (1, 2, 3) compare against the previous calendar month; widgets 4, 6 and 10 state a council-set target only. Cards are compact and carousel-paged (four visible of ten) so the work queue below stays reachable. Reference numbers are shown for review only and would not ship in the product.</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the Applications page plus widget 12. Widget 5 is excluded per the spec as too close to widget 4. Widgets 7, 8, 10 and 11 are drawn with a dashed border and a "Later phase" tag — 7 until team performance periods are implemented, 8 until the planning-reform application types settle, and 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 12, and they are ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month. Duration widgets state the target only — <em>Target: 95 days</em> — resolving the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and do not surface on the card. Whether the target is being met is carried by the colour of the value: red over target, amber on it, green under. Cards here carry no scope chip: the row is fixed to the logged-in user, so a chip could only ever read <em>My work</em> and the row heading already says it. On the Applications page, where scope varies, every card carries one. Durations are whole days. Averages built on fewer than five applications carry a low-volume marker. Cards are compact and carousel-paged (four visible of ten) so the work queue below stays reachable. Reference numbers are shown for review only and would not ship in the product.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Open questions</div>
-        <div class="bg-txt"><span class="q">1.</span> Six Phase 1 widgets and four deferred — is that the right split, and should the deferred ones appear at all in the shipped product? <span class="q">2.</span> Should the row load expanded or collapsed? <span class="q">3.</span> Widget 12 carries no comparison in the spec — is a bare count enough, or should it compare to last month too? <span class="q">4.</span> Should a team leader see their own caseload here, their team's, or a toggle? <span class="q">5.</span> With the "My" prefix removed, scope rests entirely on the "My performance" heading — is that signal strong enough?</div>
+        <div class="bg-txt"><span class="q">1.</span> Six Phase 1 widgets and four deferred — is that the right split, and should the deferred ones appear at all in the shipped product? <span class="q">2.</span> Should the row load expanded or collapsed, and should it remember the last scope used or always open on My work? <span class="q">3.</span> Widget 12 carries no comparison in the spec — is a bare count enough, or should it compare to last month too? <span class="q">4.</span> Scope selection has been deliberately kept off this screen, so a team leader must change page to read her team's numbers. Is that the right separation, or does she want <em>My work</em> and <em>My team</em> side by side where she starts her day? <span class="q">5.</span> With variance lines removed, a duration card signals pass or fail only by the colour of the number — is that enough, or should the wording return? <span class="q">6.</span> Widget 9 is Applications-only, so the vetting target does not appear here — correct, or should a planner see their own lodgement turnaround?</div>
       </div>
     </div>
   </div>
@@ -423,8 +467,8 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
       <div class="rband-title-wrap">
         <span class="rband-dot"></span>
         <div>
-          <div class="rband-name">My performance</div>
-          <div class="rband-sub">Applications assigned to you</div>
+          <div class="rband-name" id="mine-name">My performance</div>
+          <div class="rband-sub" id="mine-sub">Applications allocated to you</div>
         </div>
       </div>
       <div class="rband-right">
@@ -438,53 +482,12 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
             <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6z"/></svg>
           </button>
         </div>
-        <button class="rband-collapse" onclick="toggleBand('mine',this)">Hide</button>
+        <button class="rband-collapse" onclick="toggleBand('mine',this)">Show / hide</button>
       </div>
     </div>
     <div class="rband-body">
       <div class="carousel-viewport" id="mine-viewport">
         <div class="carousel-track" id="mine-track">
-
-          <div class="kpi-card" onclick="showToast('Active Applications — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">1</span>Active Applications</div></div>
-            <div class="kpi-value">18</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 2</span><span class="cmp-note">vs last month (16)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Lodged This Month — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">2</span>Lodged This Month</div></div>
-            <div class="kpi-value">4</div><div class="kpi-cmp"><span class="cmp-delta neutral">↓ 2</span><span class="cmp-note">vs last month (6)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">3</span>Determined This Month</div></div>
-            <div class="kpi-value">7</div><div class="kpi-cmp"><span class="cmp-delta up">↑ 2</span><span class="cmp-note">vs last month (5)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Avg Gross Days — Active — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">4</span>Avg Gross Days — Active</div></div>
-            <div class="kpi-value val-good">72<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 105 days</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Overdue Applications — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">6</span>Overdue Applications</div></div>
-            <div class="kpi-value val-alert">1</div><div class="kpi-cmp"><span class="cmp-badge">Council target 105 days</span></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Overdue Internal Referrals — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">7</span>Overdue Internal Referrals</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value">2</div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Active by Type — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">8</span>Active by Type</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-type-list"><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#1d1d1f;"></span><span class="kpi-type-name">DA</span><span class="kpi-type-count">12</span><span class="kpi-type-pct">67%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#ff9500;"></span><span class="kpi-type-name">MA</span><span class="kpi-type-count">4</span><span class="kpi-type-pct">22%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#c7c7cc;"></span><span class="kpi-type-name">Other</span><span class="kpi-type-count">2</span><span class="kpi-type-pct">11%</span></div></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Avg Net Days — Active — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">10</span>Avg Net Days — Active</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value val-good">65<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 90 days</span></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Clock Stopped — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">11</span>Clock Stopped</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value">3</div>
-          </div>
-          <div class="kpi-card" onclick="showToast('RFI Letters in Progress — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">12</span>RFI Letters in Progress</div></div>
-            <div class="kpi-value">3</div>
-          </div>
 
         </div>
       </div>
@@ -611,23 +614,23 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
     <div class="bg-body" id="bp-apps">
       <div class="bg-row">
         <div class="bg-lbl">What this screen does</div>
-        <div class="bg-txt">Adds a row of whole-of-council reporting widgets to the top of the Applications page, above the existing application list. The widget set is standardised with the user dashboard: the same widgets appear on both screens, scoped to <strong>"All"</strong> here and <strong>"My"</strong> there. Widget 9 (Avg lodgement days) is exclusive to this screen. A data export section extracts assessment and referral data for use in external reporting tools such as Power BI.</div>
+        <div class="bg-txt">Adds a row of reporting widgets to the top of the Applications page, above the existing application list. The row opens on <strong>Whole of council</strong> and a scope control switches the same widgets to any single planning team. Scope selection lives only here — the user dashboard row is fixed to the logged-in user's own work. The widget set, card anatomy and comparison rules are shared with that screen; widget 9 (Avg lodgement days) is exclusive to this one. A data export section extracts assessment and referral data for use in external reporting tools such as Power BI.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Why designed this way</div>
-        <div class="bg-txt">These widgets began as a separate "planning leadership" dashboard. They have been folded into the Applications page instead, because that page already holds the whole-of-council data set the widgets describe — a leader reading a council-wide number and then wanting the rows behind it should not have to change screens. Personal caseload widgets remain on the user dashboard. Foundation partner research (Canada Bay, North Sydney, Ryde, Hornsby) confirmed councils need to monitor assessment speed in real time against tightening targets: 105 days for FY 25–26, reducing to 85 days by FY 27–28.</div>
+        <div class="bg-txt">These widgets began as a separate "planning leadership" dashboard. They have been folded into the Applications page instead, because that page already holds the whole-of-council data set the widgets describe — a leader reading a council-wide number and then wanting the rows behind it should not have to change screens. Personal caseload widgets remain on the user dashboard. Foundation partner research (Canada Bay, North Sydney, Ryde, Hornsby) confirmed councils need to monitor assessment speed in real time against tightening targets: 95 days for FY 26–27, reducing to 85 days from 1 July 2027. Whole-of-council alone was not enough — a coordinator runs a team, not a council, and without team scope she has to export to Excel to see her own numbers, which is the behaviour Build AU is meant to replace.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Audience</div>
-        <div class="bg-txt">Any user with access to the Applications page. The widgets are no longer framed around a leadership persona — they are page-level statistics describing the council's whole application set, so they show the same figures to every user who can see the page.</div>
+        <div class="bg-txt">Any user with access to the Applications page. The widgets are not framed around a leadership persona — they are page-level statistics describing whichever scope the user selects. Any user may select any team, consistent with whole-of-council performance already being open to everyone who can see the page.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Design decisions</div>
-        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the user dashboard plus widget 9. Widget 5 is excluded per the spec. Widgets 7, 8, 10 and 11 are tagged "Later phase" — 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 9. Counts (1, 2, 3) compare against the previous calendar month. Duration widgets carry a council-set target — <code>gross.days.target</code>, <code>vet.days.target</code> and <code>net.days.target</code> — because NSW targets are revised annually with the state government and each council sets its own. Widgets 4, 6 and 10 state the target only; widget 9 also states the variance against it. Every displayed value must be reachable via API so the same figures can be pulled into Power BI. Widgets report whole-of-council and do not follow the list filters; a "Whole of council" chip makes that explicit. The export sits below the application list and produces two flat CSV tables rather than one joined table, matching the structure councils need for Power BI ingestion.</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the user dashboard plus widget 9. Widget 5 is excluded per the spec. Widgets 7, 8, 10 and 11 are tagged "Later phase" — 10 and 11 together because both depend on stop-the-clock tracking, which is not captured in Phase 1. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 9, ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month for the selected scope. Duration widgets state the target only — <em>Target: 95 days</em> — which resolves the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and no longer surface on the card. Targets stay council-level at every scope, because the Statement of Expectations is a council commitment, not a team KPI. Scope selection is a dropdown rather than a chip row, since councils run anywhere from two to a dozen planning teams. When a team is selected the row takes an accent bar, a tinted header and a per-card scope chip. Team is taken from each application's currently assigned team, and applies to unallocated work too, so every widget can be team-scoped. Team figures sum exactly to the council figures; averages are weighted by application count, not the mean of team means. Durations are whole days, and averages built on fewer than five applications carry a low-volume marker. Menus carry no explanatory prose — team name and count only. Every displayed value must be reachable via API, with <code>scope</code> and <code>teamId</code> parameters, so the same figures can be pulled into Power BI. The widgets do not follow the list filters. The export sits below the application list and produces two flat CSV tables rather than one joined table, matching the structure councils need for Power BI ingestion.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Open questions</div>
-        <div class="bg-txt"><span class="q">1.</span> Fixed whole-of-council scope means a user can read "142 active" while the filtered list below shows three rows. Is the scope chip enough, or should the widgets follow the filters? <span class="q">2.</span> Should the row also appear on the Completed tab, where several metrics no longer apply? <span class="q">3.</span> Where do councils set the three target values, and who is allowed to change them? <span class="q">4.</span> Counts compare to the previous <em>calendar</em> month, so early in a month widgets 2 and 3 will always look down — is a rolling comparison better? <span class="q">5.</span> Widget 9 states its variance against target while 4, 6 and 10 state the target alone — should that be consistent? <span class="q">6.</span> Should any figures be role-restricted, or is whole-of-council performance open to all users?</div>
+        <div class="bg-txt"><span class="q">1.</span> The widgets do not follow the list filters, and now there are two scope mechanisms on one screen — a user can read "48 active" for a team above a list showing three filtered rows. The accent bar and card chips say <em>which</em> scope is active but not that the list is independent of it. Is that acceptable, or should the scope menu offer an <em>Apply to list</em> action? <span class="q">2.</span> Should the row also appear on the Completed tab, where several metrics no longer apply? <span class="q">3.</span> Where do councils set the target values, and who is allowed to change them? Targets are revised each July, so they need to be effective-dated rather than a single stored number someone remembers to change. <span class="q">4.</span> Counts compare to the previous <em>calendar</em> month, so early in a month widgets 2 and 3 will always look down — is a rolling comparison better? <span class="q">5.</span> Whole days breaks the vetting metric: widget 9 has a 7-day target, so a team averaging 7.4 days displays as 7 and reads compliant while failing. Major Projects shows exactly that. Should widget 9 carry one decimal? <span class="q">6.</span> Scope resolves to the application's current team, so reassigning an application rewrites last month's figures for both teams. Team figures are not point-in-time reproducible — acceptable, or do councils need month-end snapshots? <span class="q">7.</span> Should the row remember the last team used, or always open on whole of council? <span class="q">8.</span> Is an <em>Unallocated applications</em> widget wanted at team scope? Allocation is the coordinator's core job and it is buildable from data that exists today. <span class="q">9.</span> The count beside each team in the picker is unlabelled — accept it as learnable, label the group, or drop the counts?</div>
       </div>
     </div>
   </div>
@@ -638,12 +641,19 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
       <div class="rband-title-wrap">
         <span class="rband-dot"></span>
         <div>
-          <div class="rband-name">Performance overview</div>
-          <div class="rband-sub">All active applications across the council</div>
+          <div class="rband-name" id="council-name">Performance overview</div>
+          <div class="rband-sub" id="council-sub">All active applications across the council</div>
+        </div>
+        <div class="scope-wrap" style="margin-left:6px;">
+          <button class="scope-select" id="council-scope-btn" onclick="toggleScopeMenu('council',event)" aria-haspopup="true">
+            <span class="sc-kind" id="council-scope-kind">Reporting on</span>
+            <span id="council-scope-name">Whole of council</span>
+            <span class="sc-chev">▼</span>
+          </button>
+          <div class="scope-menu" id="council-scope-menu"></div>
         </div>
       </div>
       <div class="rband-right">
-        <span class="scope-chip" onclick="showToast('Widgets always report whole of council — they do not follow the list filters below')">Whole of council</span>
         <span class="rband-counter" id="council-counter">Showing 1–4 of 10</span>
         <div class="carousel-controls">
           <button class="carousel-btn" id="council-prev" onclick="scrollCarousel('council',-1)" disabled>
@@ -654,53 +664,12 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
             <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6z"/></svg>
           </button>
         </div>
-        <button class="rband-collapse" onclick="toggleBand('council',this)">Hide</button>
+        <button class="rband-collapse" onclick="toggleBand('council',this)">Show / hide</button>
       </div>
     </div>
     <div class="rband-body">
       <div class="carousel-viewport" id="council-viewport">
         <div class="carousel-track" id="council-track">
-
-          <div class="kpi-card" onclick="showToast('Active Applications — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">1</span>Active Applications</div></div>
-            <div class="kpi-value">142</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 8</span><span class="cmp-note">vs last month (134)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Lodged This Month — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">2</span>Lodged This Month</div></div>
-            <div class="kpi-value">23</div><div class="kpi-cmp"><span class="cmp-delta neutral">↑ 3</span><span class="cmp-note">vs last month (20)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Determined This Month — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">3</span>Determined This Month</div></div>
-            <div class="kpi-value">31</div><div class="kpi-cmp"><span class="cmp-delta up">↑ 5</span><span class="cmp-note">vs last month (26)</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Avg Gross Days — Active — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">4</span>Avg Gross Days — Active</div></div>
-            <div class="kpi-value val-good">68<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 105 days</span></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Overdue Applications — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">6</span>Overdue Applications</div></div>
-            <div class="kpi-value val-alert">11</div><div class="kpi-cmp"><span class="cmp-badge">Council target 105 days</span></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Overdue Internal Referrals — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">7</span>Overdue Internal Referrals</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value">9</div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Active by Type — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">8</span>Active by Type</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-type-list"><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#1d1d1f;"></span><span class="kpi-type-name">DA</span><span class="kpi-type-count">95</span><span class="kpi-type-pct">67%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#ff9500;"></span><span class="kpi-type-name">MA</span><span class="kpi-type-count">32</span><span class="kpi-type-pct">23%</span></div><div class="kpi-type-row"><span class="kpi-type-dot" style="background:#c7c7cc;"></span><span class="kpi-type-name">Other</span><span class="kpi-type-count">15</span><span class="kpi-type-pct">11%</span></div></div>
-          </div>
-          <div class="kpi-card" onclick="showToast('Avg Lodgement Days — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">9</span>Avg Lodgement Days</div></div>
-            <div class="kpi-value val-good">5<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 7 days</span><span class="cmp-good">2 days inside</span></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Avg Net Days — Active — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">10</span>Avg Net Days — Active</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value val-good">61<span class="unit"> days</span></div><div class="kpi-cmp"><span class="cmp-badge">Target 90 days</span></div>
-          </div>
-          <div class="kpi-card future" onclick="showToast('Clock Stopped — detail view coming in a later phase')">
-            <div class="kpi-top"><div class="kpi-label"><span class="kpi-num">11</span>Clock Stopped</div><span class="kpi-phase">Later phase</span></div>
-            <div class="kpi-value">12</div>
-          </div>
 
         </div>
       </div>
@@ -717,7 +686,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
     <div class="tab-panel active" data-grp="apps">
       <div class="table-tools">
         <button class="tool-btn" onclick="showToast('Search this list')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg></button>
-        <button class="tool-btn" onclick="showToast('Filter this list — widgets above always report whole of council')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
+        <button class="tool-btn" onclick="showToast('Filter this list — the widgets above do not follow these filters')"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></button>
       </div>
       <div class="tbl-wrap"><table class="dt">
         <thead><tr><th>Age <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Assessing officer</th><th>Team</th><th>Referrals</th><th>Compliance</th><th>RFI Letter</th><th>Determination</th></tr></thead>
@@ -753,7 +722,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
           <tr onclick="showToast('DA974289 — detail view not part of this concept')">
             <td>15 days</td><td><span class="da-link">DA974289</span></td><td>10 Kent Street, Sydney NSW 2000</td><td>Residential</td>
             <td class="dash">--</td>
-            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-team">Planning Team West</span></td>
             <td><span class="chip chip-grey">Not started</span></td><td class="dash">--</td><td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
           </tr>
           <tr onclick="showToast('DA026105 — detail view not part of this concept')">
@@ -767,7 +736,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
           <tr onclick="showToast('DA445607 — detail view not part of this concept')">
             <td><span class="chip chip-pink">Not lodged</span></td><td><span class="da-link">DA445607</span></td><td>138 Skye Point Road, Coal Point NSW 2283</td><td>Residential</td>
             <td class="dash">--</td>
-            <td><span class="chip chip-team">Planning - General</span></td>
+            <td><span class="chip chip-team">Major Projects</span></td>
             <td class="dash">--</td><td class="dash">--</td><td class="dash">--</td><td><span class="chip chip-grey">Not started</span></td>
           </tr>
         </tbody>
@@ -783,9 +752,9 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
         <thead><tr><th>Determined <span class="sort">↓</span></th><th>Application</th><th>Address</th><th>Development type</th><th>Assessing officer</th><th>Team</th><th>Gross days</th><th>Net days</th><th>Determination</th></tr></thead>
         <tbody>
           <tr onclick="showToast('DA771204 — detail view not part of this concept')"><td>3 days ago</td><td><span class="da-link">DA771204</span></td><td>12 Cabarita Road, Cabarita NSW 2137</td><td>Residential</td><td><div class="cell-officer"><span class="avatar-xs av-sr">SR</span>Sean Richards</div></td><td><span class="chip chip-team">Planning - General</span></td><td>76</td><td>61</td><td><span class="chip chip-green">Approved</span></td></tr>
-          <tr onclick="showToast('DA662018 — detail view not part of this concept')"><td>9 days ago</td><td><span class="da-link">DA662018</span></td><td>5 Russell Lea Avenue, Russell Lea NSW 2046</td><td>Multi-dwelling</td><td><div class="cell-officer"><span class="avatar-xs av-np">NP</span>Nigel Paxton</div></td><td><span class="chip chip-team">Planning - General</span></td><td>91</td><td>74</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('DA662018 — detail view not part of this concept')"><td>9 days ago</td><td><span class="da-link">DA662018</span></td><td>5 Russell Lea Avenue, Russell Lea NSW 2046</td><td>Multi-dwelling</td><td><div class="cell-officer"><span class="avatar-xs av-np">NP</span>Nigel Paxton</div></td><td><span class="chip chip-team">Planning Team West</span></td><td>91</td><td>74</td><td><span class="chip chip-green">Approved</span></td></tr>
           <tr onclick="showToast('DA509337 — detail view not part of this concept')"><td>18 days ago</td><td><span class="da-link">DA509337</span></td><td>88 Wareemba Street, Wareemba NSW 2046</td><td>Residential</td><td><div class="cell-officer"><span class="avatar-xs av-hs">HS</span>Hayley Stand</div></td><td><span class="chip chip-team">Planning Team East</span></td><td>112</td><td>88</td><td><span class="chip chip-red">Refused</span></td></tr>
-          <tr onclick="showToast('MA221847 — detail view not part of this concept')"><td>24 days ago</td><td><span class="da-link">MA221847</span></td><td>16 Great North Road, Five Dock NSW 2046</td><td>Commercial</td><td><div class="cell-officer"><span class="avatar-xs av-ri">RI</span>Romina Iwikau</div></td><td><span class="chip chip-team">Planning - General</span></td><td>54</td><td>54</td><td><span class="chip chip-green">Approved</span></td></tr>
+          <tr onclick="showToast('MA221847 — detail view not part of this concept')"><td>24 days ago</td><td><span class="da-link">MA221847</span></td><td>16 Great North Road, Five Dock NSW 2046</td><td>Commercial</td><td><div class="cell-officer"><span class="avatar-xs av-ri">RI</span>Romina Iwikau</div></td><td><span class="chip chip-team">Major Projects</span></td><td>54</td><td>54</td><td><span class="chip chip-green">Approved</span></td></tr>
         </tbody>
       </table></div>
     </div>
@@ -802,7 +771,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
         </div>
       </div>
       <div class="rband-right">
-        <span class="scope-chip">Whole of council</span>
+        <span class="scope-chip">Whole of council — export is not affected by widget scope</span>
         <span class="bg-chev" id="chev-export">▾</span>
       </div>
     </div>
@@ -942,7 +911,7 @@ function toggleBP(id){
 function toggleBand(id,btn){
   const band=document.getElementById('rband-'+id);
   const collapsed=band.classList.toggle('collapsed');
-  btn.textContent = collapsed ? 'Show' : 'Hide';
+  btn.textContent = 'Show / hide';
   if(!collapsed) updateCarousel(id);
 }
 
@@ -954,6 +923,174 @@ function switchTab(grp,idx,btn){
   const panels=card.querySelectorAll('.tab-panel[data-grp="'+grp+'"]');
   panels.forEach((p,i)=>p.classList.toggle('active', i===idx));
 }
+
+/* ══════════════════════════════════════════════════════════
+   REPORTING WIDGETS — scope model, data and card renderer
+   One renderer serves both screens so the two rows cannot drift.
+   ══════════════════════════════════════════════════════════ */
+
+/* Council-configurable targets. gross: FY2026-27 NSW Statement of
+   Expectations (95 days, stepping to 85 on 1 July 2027). */
+const TARGETS={gross:95,vet:7,net:65};
+
+const SCOPES={
+  me:      {name:'My work',            short:'My work'},
+  council: {name:'Whole of council',    short:'Whole of council'},
+  general: {name:'Planning - General',  short:'General'},
+  east:    {name:'Planning Team East',  short:'Team East'},
+  west:    {name:'Planning Team West',  short:'Team West'},
+  major:   {name:'Major Projects',      short:'Major Projects'}
+};
+const TEAM_IDS=['general','east','west','major'];
+
+/* Widget definitions. kind drives the card body.
+   Order puts the six Phase 1 widgets first, later-phase last. */
+const WIDGET_DEFS={
+  1: {label:'Active Applications',        kind:'count',  dir:'neutral'},
+  2: {label:'Lodged This Month',          kind:'count',  dir:'neutral'},
+  3: {label:'Determined This Month',      kind:'count',  dir:'goodUp'},
+  4: {label:'Avg Gross Days — Active',    kind:'dur',    target:'gross'},
+  6: {label:'Overdue Applications',       kind:'count0', target:'gross'},
+  9: {label:'Avg Lodgement Days',         kind:'dur',    target:'vet', nFrom:2},
+  12:{label:'RFI Letters in Progress',    kind:'bare'},
+  7: {label:'Overdue Internal Referrals', kind:'bare',   later:true},
+  8: {label:'Active by Type',             kind:'types',  later:true},
+  10:{label:'Avg Net Days — Active',      kind:'dur',    target:'net', later:true},
+  11:{label:'Clock Stopped',              kind:'bare',   later:true}
+};
+/* Widget 12 is dashboard-only; widget 9 is Applications-only. */
+const BAND_WIDGETS={
+  mine:   [1,2,3,4,6,12,7,8,10,11],
+  council:[1,2,3,4,6,9,7,8,10,11]
+};
+
+/* Team figures sum exactly to the council figures; council averages are the
+   application-weighted means of the team figures. Durations are whole days. */
+const WDATA={
+  me:      {1:{v:18,p:16},  2:{v:4,p:6},  3:{v:7,p:5},   4:{v:72},  6:{v:1},  9:{v:5},
+            12:{v:3}, 7:{v:2}, 8:{DA:12,MA:4,Other:2},   10:{v:61}, 11:{v:3}},
+  council: {1:{v:142,p:134},2:{v:23,p:20},3:{v:31,p:26}, 4:{v:68},  6:{v:11}, 9:{v:5},
+            12:{v:14},7:{v:9}, 8:{DA:95,MA:32,Other:15}, 10:{v:61}, 11:{v:12}},
+  general: {1:{v:62,p:58},  2:{v:10,p:9}, 3:{v:14,p:12}, 4:{v:60},  6:{v:4},  9:{v:4},
+            12:{v:6}, 7:{v:4}, 8:{DA:44,MA:13,Other:5},  10:{v:54}, 11:{v:5}},
+  east:    {1:{v:41,p:40},  2:{v:6,p:5},  3:{v:9,p:8},   4:{v:64},  6:{v:3},  9:{v:5},
+            12:{v:4}, 7:{v:2}, 8:{DA:28,MA:9,Other:4},   10:{v:57}, 11:{v:4}},
+  west:    {1:{v:24,p:22},  2:{v:4,p:4},  3:{v:5,p:4},   4:{v:72},  6:{v:2},  9:{v:7},
+            12:{v:2}, 7:{v:2}, 8:{DA:15,MA:6,Other:3},   10:{v:64}, 11:{v:2}},
+  major:   {1:{v:15,p:14},  2:{v:3,p:2},  3:{v:3,p:2},   4:{v:102}, 6:{v:2},  9:{v:8},
+            12:{v:2}, 7:{v:1}, 8:{DA:8,MA:4,Other:3},    10:{v:92}, 11:{v:1}}
+};
+
+const LOW_VOL=5;                 /* averages below this denominator are marked */
+const TYPE_COLOURS={DA:'#1d1d1f',MA:'#ff9500',Other:'#c7c7cc'};
+const bandScope={mine:'me',council:'council'};
+
+/* value colour against target: over = alert, on = warning, under = good */
+function durClass(v,t){ return v>t?'val-alert':(v===t?'val-warning':'val-good'); }
+
+function cardHTML(ref,scopeId){
+  const w=WIDGET_DEFS[ref], d=WDATA[scopeId][ref];
+  const isTeam=TEAM_IDS.indexOf(scopeId)>-1;
+  const toast=w.label+' — detail view coming in a later phase';
+  let h='<div class="kpi-card'+(w.later?' future':'')+'" onclick="showToast(\''+toast.replace(/'/g,"\\'")+'\')">';
+  h+='<div class="kpi-top"><div class="kpi-label"><span class="kpi-num">'+ref+'</span>'+w.label+'</div>'
+    +(w.later?'<span class="kpi-phase">Later phase</span>':'')+'</div>';
+  /* No scope chip at 'My work' — the dashboard row is fixed to the logged-in
+     user, so the chip could never say anything else. Council and team scope
+     both vary, so those cards keep it. */
+  if(scopeId!=='me') h+='<span class="kpi-scope'+(isTeam?' team':'')+'">'+SCOPES[scopeId].short+'</span>';
+
+  if(w.kind==='types'){
+    const tot=d.DA+d.MA+d.Other;
+    h+='<div class="kpi-type-list">';
+    ['DA','MA','Other'].forEach(function(t){
+      h+='<div class="kpi-type-row"><span class="kpi-type-dot" style="background:'+TYPE_COLOURS[t]+';"></span>'
+        +'<span class="kpi-type-name">'+t+'</span><span class="kpi-type-count">'+d[t]+'</span>'
+        +'<span class="kpi-type-pct">'+Math.round(d[t]/tot*100)+'%</span></div>';
+    });
+    h+='</div>';
+  } else if(w.kind==='dur'){
+    const t=TARGETS[w.target];
+    h+='<div class="kpi-value '+durClass(d.v,t)+'">'+d.v+'<span class="unit"> days</span></div>';
+    h+='<div class="kpi-cmp"><span class="cmp-badge">Target: '+t+' days</span>';
+    if(w.nFrom){
+      const n=WDATA[scopeId][w.nFrom].v;
+      if(n<LOW_VOL) h+='<span class="cmp-lowvol">Low volume · '+n+'</span>';
+    }
+    h+='</div>';
+  } else if(w.kind==='count0'){
+    h+='<div class="kpi-value'+(d.v>0?' val-alert':'')+'">'+d.v+'</div>';
+    h+='<div class="kpi-cmp"><span class="cmp-badge">Target: '+TARGETS[w.target]+' days</span></div>';
+  } else if(w.kind==='count'){
+    const diff=d.v-d.p;
+    const cls=(w.dir==='goodUp')?(diff>0?'up':(diff<0?'down':'neutral')):'neutral';
+    h+='<div class="kpi-value">'+d.v+'</div><div class="kpi-cmp">';
+    if(diff===0) h+='<span class="cmp-note">No change vs last month ('+d.p+')</span>';
+    else h+='<span class="cmp-delta '+cls+'">'+(diff>0?'↑':'↓')+' '+Math.abs(diff)+'</span>'
+           +'<span class="cmp-note">vs last month ('+d.p+')</span>';
+    h+='</div>';
+  } else {
+    h+='<div class="kpi-value">'+d.v+'</div>';
+  }
+  return h+'</div>';
+}
+
+const BAND_TITLES={me:'My performance',council:'Performance overview'};
+function bandSub(band,scopeId){
+  if(scopeId==='me') return 'Applications allocated to you';
+  if(scopeId==='council') return 'All active applications across the council';
+  return WDATA[scopeId][1].v+' active applications in '+SCOPES[scopeId].name;
+}
+
+function renderBand(band){
+  const sc=bandScope[band], isTeam=TEAM_IDS.indexOf(sc)>-1;
+  /* The dashboard row is fixed to My work and has no scope control. */
+  const nameEl=document.getElementById(band+'-scope-name');
+  if(nameEl){
+    nameEl.textContent=SCOPES[sc].name;
+    document.getElementById(band+'-scope-kind').textContent=isTeam?'Team':'Reporting on';
+  }
+  document.getElementById(band+'-name').textContent =
+    isTeam ? 'Team performance' : BAND_TITLES[sc];
+  document.getElementById(band+'-sub').textContent=bandSub(band,sc);
+  document.getElementById('rband-'+band).classList.toggle('scoped',isTeam);
+
+  buildScopeMenu(band);
+  if(carousels[band]) updateCarousel(band);
+  else document.getElementById(band+'-track').innerHTML =
+    BAND_WIDGETS[band].slice(0,4).map(function(r){return cardHTML(r,sc);}).join('');
+}
+
+function buildScopeMenu(band){
+  const box=document.getElementById(band+'-scope-menu');
+  if(!box) return;                       /* dashboard row has no scope control */
+  /* the band's default scope leads the menu, teams follow */
+  let h='<div class="scope-group">Council</div>'+scopeOpt(band,'council',WDATA.council[1].v)
+       +'<div class="scope-sep"></div><div class="scope-group">Planning teams</div>';
+  TEAM_IDS.forEach(function(t){ h+=scopeOpt(band,t,WDATA[t][1].v); });
+  box.innerHTML=h;
+}
+function scopeOpt(band,id,count){
+  return '<button class="scope-opt'+(bandScope[band]===id?' sel':'')+'" data-scope="'+id+'"'
+    +' onclick="setBandScope(\''+band+'\',\''+id+'\')">'
+    +'<span class="scope-opt-name">'+SCOPES[id].name+'</span>'
+    +'<span class="scope-opt-count">'+count+'</span></button>';
+}
+function toggleScopeMenu(band,e){
+  e.stopPropagation();
+  const m=document.getElementById(band+'-scope-menu');
+  document.querySelectorAll('.scope-menu').forEach(function(x){ if(x!==m) x.classList.remove('open'); });
+  m.classList.toggle('open');
+}
+function setBandScope(band,id){
+  bandScope[band]=id;
+  if(carousels[band]) carousels[band].index=0;
+  document.getElementById(band+'-scope-menu').classList.remove('open');
+  renderBand(band);
+}
+document.addEventListener('click',function(){
+  document.querySelectorAll('.scope-menu').forEach(function(m){ m.classList.remove('open'); });
+});
 
 /* ── Carousel ── */
 const carousels={};
@@ -978,16 +1115,16 @@ function scrollCarousel(id,dir){
 }
 function updateCarousel(id){
   const c=carousels[id];
-  const track=document.getElementById(id+'-track');
-  const cards=track.querySelectorAll('.kpi-card');
-  const first=cards[c.index*c.perPage];
-  const base=cards[0]?cards[0].offsetLeft:0;
-  track.style.transform='translateX(-'+(first?(first.offsetLeft-base):0)+'px)';
+  const start=c.index*c.perPage, end=Math.min(start+c.perPage,c.total);
+  /* Render only the visible page. One flex row of all ten cards padded every card
+     out to the height of the tallest (widget 8), leaving dead space on the short
+     ones — each page now sizes to its own four cards. */
+  const refs=BAND_WIDGETS[id].slice(start,end), sc=bandScope[id];
+  document.getElementById(id+'-track').innerHTML=refs.map(function(r){return cardHTML(r,sc);}).join('');
   document.querySelectorAll('#'+id+'-dots .carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===c.index));
   document.getElementById(id+'-prev').disabled = c.index===0;
   document.getElementById(id+'-next').disabled = c.index>=c.pages-1;
-  const start=c.index*c.perPage+1, end=Math.min((c.index+1)*c.perPage,c.total);
-  document.getElementById(id+'-counter').textContent='Showing '+start+'–'+end+' of '+c.total;
+  document.getElementById(id+'-counter').textContent='Showing '+(start+1)+'–'+end+' of '+c.total;
 }
 
 /* ── Export band collapse ── */
@@ -1030,8 +1167,10 @@ function showToast(msg){
 /* ── Init ── */
 window.addEventListener('DOMContentLoaded',()=>{
   switchScreen('dashboard');
-  initCarousel('mine',10,4);
-  initCarousel('council',10,4);
+  renderBand('mine');
+  renderBand('council');
+  initCarousel('mine',BAND_WIDGETS.mine.length,4);
+  initCarousel('council',BAND_WIDGETS.council.length,4);
 });
 window.addEventListener('resize',()=>{ ['mine','council'].forEach(id=>{ if(carousels[id]) updateCarousel(id); }); });
 </script>
