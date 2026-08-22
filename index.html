@@ -218,6 +218,10 @@ button{font-family:inherit;}
 }
 .kpi-scope.team{background:var(--ob-blue-bg);color:var(--ob-blue);}
 .cmp-lowvol{font-size:9px;font-weight:600;color:var(--warning-text);background:var(--warning-bg);border:1px solid #f5dcae;padding:2px 6px;border-radius:4px;white-space:nowrap;}
+.kpi-second{margin-top:9px;padding-top:8px;border-top:1px solid var(--border-light);}
+.kpi-second-val{font-size:20px;font-weight:700;letter-spacing:-.5px;line-height:1;color:var(--warning-text);}
+.kpi-second-val.none{color:var(--ink-faint);}
+.kpi-second-note{font-size:10.5px;color:var(--ink-light);margin-top:3px;line-height:1.35;}
 
 
 .kpi-type-list{display:flex;flex-direction:column;gap:6px;margin:2px 0 0;}
@@ -440,7 +444,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
     <div class="bg-body" id="bp-dash">
       <div class="bg-row">
         <div class="bg-lbl">What this screen does</div>
-        <div class="bg-txt">Places a row of personal performance widgets at the top of the logged-in user's dashboard, directly above their existing work lists. The row is fixed to <strong>My work</strong> — the applications allocated to the logged-in user — and carries no scope control. Team and whole-of-council figures live on the Applications page. The widget set, card anatomy and comparison rules are otherwise identical to that page; widget 12 (RFI letters in progress) is exclusive to this screen. Everything below the widget row is the existing dashboard: the Admin, Active, Determine and Completed tabs and their grouped work queues.</div>
+        <div class="bg-txt">Places a row of personal performance widgets at the top of the logged-in user's dashboard, directly above their existing work lists. The row is fixed to <strong>My work</strong> — the applications allocated to the logged-in user — and carries no scope control. Team and whole-of-council figures live on the Applications page. The widget set, card anatomy and comparison rules are otherwise identical to that page; widget 12 (Awaiting RFI response) is exclusive to this screen. Everything below the widget row is the existing dashboard: the Admin, Active, Determine and Completed tabs and their grouped work queues.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Why designed this way</div>
@@ -452,11 +456,11 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Design decisions</div>
-        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the Applications page plus widget 12. Widget 5 is excluded per the spec as too close to widget 4. Widgets 7, 8, 10 and 11 are drawn with a dashed border and a "Later phase" tag — 7 until team performance periods are implemented, 8 until the planning-reform application types settle, and 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 12, and they are ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month. Duration widgets state the target only — <em>Target: 95 days</em> — resolving the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and do not surface on the card. Whether the target is being met is carried by the colour of the value: red over target, amber on it, green under. Cards here carry no scope chip: the row is fixed to the logged-in user, so a chip could only ever read <em>My work</em> and the row heading already says it. On the Applications page, where scope varies, every card carries one. Durations are whole days. Averages built on fewer than five applications carry a low-volume marker. Cards are compact and carousel-paged (four visible of ten) so the work queue below stays reachable. Reference numbers are shown for review only and would not ship in the product.</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the Applications page plus widget 12. Widget 5 is excluded per the spec as too close to widget 4. Widgets 7, 8, 10 and 11 are drawn with a dashed border and a "Later phase" tag — 7 until team performance periods are implemented, 8 until the planning-reform application types settle, and 10 and 11 together because both depend on stop-the-clock tracking. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 12, and they are ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month. Duration widgets state the target only — <em>Target: 95 days</em> — resolving the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and do not surface on the card. Whether the target is being met is carried by the colour of the value: red over target, amber on it, green under. Widget 6 shows two tiers — applications already overdue in red, and beneath them the count due to pass the target within seven days in amber — so a coordinator sees what is about to go wrong as well as what already has. Cards here carry no scope chip: the row is fixed to the logged-in user, so a chip could only ever read <em>My work</em> and the row heading already says it. On the Applications page, where scope varies, every card carries one. Durations are whole days. Averages built on fewer than five applications carry a low-volume marker. Cards are compact and carousel-paged (four visible of ten) so the work queue below stays reachable. Reference numbers are shown for review only and would not ship in the product.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Open questions</div>
-        <div class="bg-txt"><span class="q">1.</span> Six Phase 1 widgets and four deferred — is that the right split, and should the deferred ones appear at all in the shipped product? <span class="q">2.</span> Should the row load expanded or collapsed, and should it remember the last scope used or always open on My work? <span class="q">3.</span> Widget 12 carries no comparison in the spec — is a bare count enough, or should it compare to last month too? <span class="q">4.</span> Scope selection has been deliberately kept off this screen, so a team leader must change page to read her team's numbers. Is that the right separation, or does she want <em>My work</em> and <em>My team</em> side by side where she starts her day? <span class="q">5.</span> With variance lines removed, a duration card signals pass or fail only by the colour of the number — is that enough, or should the wording return? <span class="q">6.</span> Widget 9 is Applications-only, so the vetting target does not appear here — correct, or should a planner see their own lodgement turnaround?</div>
+        <div class="bg-txt"><span class="q">1.</span> Six Phase 1 widgets and four deferred — is that the right split, and should the deferred ones appear at all in the shipped product? <span class="q">2.</span> Should the row load expanded or collapsed? <span class="q">3.</span> Widget 12 has been renamed from <em>RFI letters in progress</em> to <em>Awaiting RFI response</em>. That changes the population, not just the wording: letters being drafted are a different set from letters already sent and waiting on the applicant. It also overlaps with widget 11 (Clock stopped), since in NSW the stopped-clock period is usually triggered by the RFI being sent. Is that overlap acceptable, or does one of the two go the way of widget 5? <span class="q">4.</span> Scope selection has been deliberately kept off this screen, so a team leader must change page to read her team's numbers. Is that the right separation, or does she want <em>My work</em> and <em>My team</em> side by side where she starts her day? <span class="q">5.</span> With variance lines removed, a duration card signals pass or fail only by the colour of the number — is that enough, or should the wording return? <span class="q">6.</span> Widget 9 is Applications-only, so the vetting target does not appear here — correct, or should a planner see their own lodgement turnaround?</div>
       </div>
     </div>
   </div>
@@ -626,7 +630,7 @@ table.export-col-table td:last-child{text-align:right;color:var(--ink-faint);fon
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Design decisions</div>
-        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the user dashboard plus widget 9. Widget 5 is excluded per the spec. Widgets 7, 8, 10 and 11 are tagged "Later phase" — 10 and 11 together because both depend on stop-the-clock tracking, which is not captured in Phase 1. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 9, ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month for the selected scope. Duration widgets state the target only — <em>Target: 95 days</em> — which resolves the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and no longer surface on the card. Targets stay council-level at every scope, because the Statement of Expectations is a council commitment, not a team KPI. Scope selection is a dropdown rather than a chip row, since councils run anywhere from two to a dozen planning teams. When a team is selected the row takes an accent bar, a tinted header and a per-card scope chip. Team is taken from each application's currently assigned team, and applies to unallocated work too, so every widget can be team-scoped. Team figures sum exactly to the council figures; averages are weighted by application count, not the mean of team means. Durations are whole days, and averages built on fewer than five applications carry a low-volume marker. Menus carry no explanatory prose — team name and count only. Every displayed value must be reachable via API, with <code>scope</code> and <code>teamId</code> parameters, so the same figures can be pulled into Power BI. The widgets do not follow the list filters. The export sits below the application list and produces two flat CSV tables rather than one joined table, matching the structure councils need for Power BI ingestion.</div>
+        <div class="bg-txt">Widget selection, definitions and comparison behaviour follow the <em>BASS: Performance Reporting — High-level Stories</em> widget array. Ten widgets appear here: nine shared with the user dashboard plus widget 9. Widget 5 is excluded per the spec. Widgets 7, 8, 10 and 11 are tagged "Later phase" — 10 and 11 together because both depend on stop-the-clock tracking, which is not captured in Phase 1. That leaves six widgets in Phase 1 here: 1, 2, 3, 4, 6 and 9, ordered first so the live set reads before the deferred set. Counts (1, 2, 3) compare against the previous calendar month for the selected scope. Duration widgets state the target only — <em>Target: 95 days</em> — which resolves the earlier inconsistency where widget 9 also stated its variance; the configuration variable names are internal and no longer surface on the card. Widget 6 carries two tiers instead of a target: the count already past the target, and beneath it the count that will pass it within the next seven days. The warning window is relative to the target, so it follows the target down as it steps 95 to 85 — unlike the earlier at-risk design, which hardcoded 80 days and would have gone stale. Targets stay council-level at every scope, because the Statement of Expectations is a council commitment, not a team KPI. Scope selection is a dropdown rather than a chip row, since councils run anywhere from two to a dozen planning teams. When a team is selected the row takes an accent bar, a tinted header and a per-card scope chip. Team is taken from each application's currently assigned team, and applies to unallocated work too, so every widget can be team-scoped. Team figures sum exactly to the council figures; averages are weighted by application count, not the mean of team means. Durations are whole days, and averages built on fewer than five applications carry a low-volume marker. Menus carry no explanatory prose — team name and count only. Every displayed value must be reachable via API, with <code>scope</code> and <code>teamId</code> parameters, so the same figures can be pulled into Power BI. The widgets do not follow the list filters. The export sits below the application list and produces two flat CSV tables rather than one joined table, matching the structure councils need for Power BI ingestion.</div>
       </div>
       <div class="bg-row">
         <div class="bg-lbl">Open questions</div>
@@ -950,9 +954,9 @@ const WIDGET_DEFS={
   2: {label:'Lodged This Month',          kind:'count',  dir:'neutral'},
   3: {label:'Determined This Month',      kind:'count',  dir:'goodUp'},
   4: {label:'Avg Gross Days — Active',    kind:'dur',    target:'gross'},
-  6: {label:'Overdue Applications',       kind:'count0', target:'gross'},
+  6: {label:'Overdue Applications',       kind:'overdue'},
   9: {label:'Avg Lodgement Days',         kind:'dur',    target:'vet', nFrom:2},
-  12:{label:'RFI Letters in Progress',    kind:'bare'},
+  12:{label:'Awaiting RFI response',      kind:'bare'},
   7: {label:'Overdue Internal Referrals', kind:'bare',   later:true},
   8: {label:'Active by Type',             kind:'types',  later:true},
   10:{label:'Avg Net Days — Active',      kind:'dur',    target:'net', later:true},
@@ -967,20 +971,21 @@ const BAND_WIDGETS={
 /* Team figures sum exactly to the council figures; council averages are the
    application-weighted means of the team figures. Durations are whole days. */
 const WDATA={
-  me:      {1:{v:18,p:16},  2:{v:4,p:6},  3:{v:7,p:5},   4:{v:72},  6:{v:1},  9:{v:5},
+  me:      {1:{v:18,p:16},  2:{v:4,p:6},  3:{v:7,p:5},   4:{v:72},  6:{v:1,r:2},  9:{v:5},
             12:{v:3}, 7:{v:2}, 8:{DA:12,MA:4,Other:2},   10:{v:61}, 11:{v:3}},
-  council: {1:{v:142,p:134},2:{v:23,p:20},3:{v:31,p:26}, 4:{v:68},  6:{v:11}, 9:{v:5},
+  council: {1:{v:142,p:134},2:{v:23,p:20},3:{v:31,p:26}, 4:{v:68},  6:{v:11,r:9}, 9:{v:5},
             12:{v:14},7:{v:9}, 8:{DA:95,MA:32,Other:15}, 10:{v:61}, 11:{v:12}},
-  general: {1:{v:62,p:58},  2:{v:10,p:9}, 3:{v:14,p:12}, 4:{v:60},  6:{v:4},  9:{v:4},
+  general: {1:{v:62,p:58},  2:{v:10,p:9}, 3:{v:14,p:12}, 4:{v:60},  6:{v:4,r:3},  9:{v:4},
             12:{v:6}, 7:{v:4}, 8:{DA:44,MA:13,Other:5},  10:{v:54}, 11:{v:5}},
-  east:    {1:{v:41,p:40},  2:{v:6,p:5},  3:{v:9,p:8},   4:{v:64},  6:{v:3},  9:{v:5},
+  east:    {1:{v:41,p:40},  2:{v:6,p:5},  3:{v:9,p:8},   4:{v:64},  6:{v:3,r:2},  9:{v:5},
             12:{v:4}, 7:{v:2}, 8:{DA:28,MA:9,Other:4},   10:{v:57}, 11:{v:4}},
-  west:    {1:{v:24,p:22},  2:{v:4,p:4},  3:{v:5,p:4},   4:{v:72},  6:{v:2},  9:{v:7},
+  west:    {1:{v:24,p:22},  2:{v:4,p:4},  3:{v:5,p:4},   4:{v:72},  6:{v:2,r:2},  9:{v:7},
             12:{v:2}, 7:{v:2}, 8:{DA:15,MA:6,Other:3},   10:{v:64}, 11:{v:2}},
-  major:   {1:{v:15,p:14},  2:{v:3,p:2},  3:{v:3,p:2},   4:{v:102}, 6:{v:2},  9:{v:8},
+  major:   {1:{v:15,p:14},  2:{v:3,p:2},  3:{v:3,p:2},   4:{v:102}, 6:{v:2,r:2},  9:{v:8},
             12:{v:2}, 7:{v:1}, 8:{DA:8,MA:4,Other:3},    10:{v:92}, 11:{v:1}}
 };
 
+const RISK_WINDOW=7;   /* days short of the target at which an application counts as at risk */
 const LOW_VOL=5;                 /* averages below this denominator are marked */
 const TYPE_COLOURS={DA:'#1d1d1f',MA:'#ff9500',Other:'#c7c7cc'};
 const bandScope={mine:'me',council:'council'};
@@ -1018,9 +1023,13 @@ function cardHTML(ref,scopeId){
       if(n<LOW_VOL) h+='<span class="cmp-lowvol">Low volume · '+n+'</span>';
     }
     h+='</div>';
-  } else if(w.kind==='count0'){
+  } else if(w.kind==='overdue'){
+    /* Two tiers: applications already past the council target, and those that will
+       pass it within the risk window. The window is relative to the target, so it
+       follows the target down as it steps 95 -> 85. */
     h+='<div class="kpi-value'+(d.v>0?' val-alert':'')+'">'+d.v+'</div>';
-    h+='<div class="kpi-cmp"><span class="cmp-badge">Target: '+TARGETS[w.target]+' days</span></div>';
+    h+='<div class="kpi-second"><div class="kpi-second-val'+(d.r>0?'':' none')+'">'+d.r+'</div>'
+      +'<div class="kpi-second-note">due in the next '+RISK_WINDOW+' days</div></div>';
   } else if(w.kind==='count'){
     const diff=d.v-d.p;
     const cls=(w.dir==='goodUp')?(diff>0?'up':(diff<0?'down':'neutral')):'neutral';
